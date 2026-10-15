@@ -1,0 +1,216 @@
+{
+  "platform": "Apple Silicon macOS 26.6.2",
+  "method": "Packaged app; native CUA pointer input and Electron telemetry. Option+Space and fullscreen additionally confirmed directly by Leo.",
+  "sampleCount": 314,
+  "changes": [
+    {
+      "at": "2026-10-15T03:06:32.049Z",
+      "visible": true,
+      "bounds": {
+        "x": 1008,
+        "y": 626,
+        "width": 480,
+        "height": 270
+      },
+      "alwaysOnTop": true,
+      "allSpaces": true,
+      "optionSpaceRegistered": true,
+      "currentTime": 2.042549,
+      "paused": false,
+      "muted": false,
+      "volume": 0.05
+    },
+    {
+      "at": "2026-10-15T03:07:28.356Z",
+      "visible": true,
+      "bounds": {
+        "x": 808,
+        "y": 527,
+        "width": 480,
+        "height": 270
+      },
+      "alwaysOnTop": true,
+      "allSpaces": true,
+      "optionSpaceRegistered": true,
+      "currentTime": 18.114206,
+      "paused": false,
+      "muted": false,
+      "volume": 0.05
+    },
+    {
+      "at": "2026-10-15T03:07:30.362Z",
+      "visible": false,
+      "bounds": {
+        "x": 808,
+        "y": 527,
+        "width": 480,
+        "height": 270
+      },
+      "alwaysOnTop": true,
+      "allSpaces": true,
+      "optionSpaceRegistered": true,
+      "currentTime": 20.121378,
+      "paused": false,
+      "muted": false,
+      "volume": 0.05
+    },
+    {
+      "at": "2026-10-15T03:10:58.208Z",
+      "visible": true,
+      "bounds": {
+        "x": 808,
+        "y": 527,
+        "width": 480,
+        "height": 270
+      },
+      "alwaysOnTop": true,
+      "allSpaces": true,
+      "optionSpaceRegistered": true,
+      "currentTime": 26.839681,
+      "paused": false,
+      "muted": false,
+      "volume": 0.05
+    },
+    {
+      "at": "2026-10-15T03:11:01.221Z",
+      "visible": false,
+      "bounds": {
+        "x": 808,
+        "y": 527,
+        "width": 480,
+        "height": 270
+      },
+      "alwaysOnTop": true,
+      "allSpaces": true,
+      "optionSpaceRegistered": true,
+      "currentTime": 29.849363,
+      "paused": false,
+      "muted": false,
+      "volume": 0.05
+    },
+    {
+      "at": "2026-10-15T03:11:02.224Z",
+      "visible": true,
+      "bounds": {
+        "x": 808,
+        "y": 527,
+        "width": 480,
+        "height": 270
+      },
+      "alwaysOnTop": true,
+      "allSpaces": true,
+      "optionSpaceRegistered": true,
+      "currentTime": 30.85088,
+      "paused": false,
+      "muted": false,
+      "volume": 0.05
+    },
+    {
+      "at": "2026-10-15T03:11:18.295Z",
+      "visible": true,
+      "bounds": {
+        "x": 808,
+        "y": 527,
+        "width": 400,
+        "height": 225
+      },
+      "alwaysOnTop": true,
+      "allSpaces": true,
+      "optionSpaceRegistered": true,
+      "currentTime": 6.685943,
+      "paused": false,
+      "muted": false,
+      "volume": 0.05
+    },
+    {
+      "at": "2026-10-15T03:11:24.318Z",
+      "visible": true,
+      "bounds": {
+        "x": 908,
+        "y": 277,
+        "width": 400,
+        "height": 225
+      },
+      "alwaysOnTop": false,
+      "allSpaces": true,
+      "optionSpaceRegistered": true,
+      "currentTime": 12.705852,
+      "paused": false,
+      "muted": false,
+      "volume": 0.05
+    },
+    {
+      "at": "2026-10-15T03:11:25.322Z",
+      "visible": true,
+      "bounds": {
+        "x": 860,
+        "y": 277,
+        "width": 400,
+        "height": 225
+      },
+      "alwaysOnTop": false,
+      "allSpaces": true,
+      "optionSpaceRegistered": true,
+      "currentTime": 13.717925,
+      "paused": false,
+      "muted": false,
+      "volume": 0.05
+    },
+    {
+      "at": "2026-10-15T03:11:37.374Z",
+      "visible": false,
+      "bounds": {
+        "x": 860,
+        "y": 277,
+        "width": 400,
+        "height": 225
+      },
+      "alwaysOnTop": false,
+      "allSpaces": true,
+      "optionSpaceRegistered": true,
+      "currentTime": 25.767318,
+      "paused": false,
+      "muted": false,
+      "volume": 0.05
+    },
+    {
+      "at": "2026-10-15T03:11:38.377Z",
+      "visible": true,
+      "bounds": {
+        "x": 860,
+        "y": 277,
+        "width": 400,
+        "height": 225
+      },
+      "alwaysOnTop": false,
+      "allSpaces": true,
+      "optionSpaceRegistered": true,
+      "currentTime": 26.766499,
+      "paused": false,
+      "muted": false,
+      "volume": 0.05
+    },
+    {
+      "at": "2026-10-15T03:11:39.382Z",
+      "visible": false,
+      "bounds": {
+        "x": 860,
+        "y": 277,
+        "width": 400,
+        "height": 225
+      },
+      "alwaysOnTop": false,
+      "allSpaces": true,
+      "optionSpaceRegistered": true,
+      "currentTime": 27.778587,
+      "paused": false,
+      "muted": false,
+      "volume": 0.05
+    }
+  ],
+  "humanConfirmation": {
+    "date": "2026-10-14",
+    "optionSpaceKeepsAudio": true,
+    "visibleAcrossFullscreen": true
+  }
+}

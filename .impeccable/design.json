@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-15T02:57:31.967029+00:00",
+  "title": "Design System: Perch",
+  "extensions": {
+    "motion": [
+      {
+        "name": "controls-fade",
+        "value": "opacity .18s ease-out",
+        "purpose": "Top and bottom player controls."
+      },
+      {
+        "name": "volume-reveal",
+        "value": "width .15s, opacity .15s",
+        "purpose": "Volume range expansion on hover or focus within."
+      },
+      {
+        "name": "notice-fade",
+        "value": "opacity .15s",
+        "purpose": "Short playback notices."
+      },
+      {
+        "name": "controls-idle-delay",
+        "value": "2300ms",
+        "purpose": "Delay before hiding player controls."
+      },
+      {
+        "name": "notice-duration",
+        "value": "1200ms",
+        "purpose": "Time before removing a notice."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "shell-narrow",
+        "value": "370px"
+      },
+      {
+        "name": "player-narrow",
+        "value": "390px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Play button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Starts playback from the paste field.",
+      "html": "<button class=\"ds-play\">Play</button>",
+      "css": ".ds-play{font:650 13px -apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;background:var(--accent,#ff4b4b);color:#141414;border:0;border-radius:7px;padding:8px 14px;cursor:pointer}.ds-play:hover{background:#ff7272}.ds-play:focus-visible{outline:2px solid #fff;outline-offset:3px}.ds-play:disabled{opacity:.35;cursor:default}"
+    },
+    {
+      "name": "Shell icon button",
+      "kind": "button",
+      "refersTo": "button-shell-icon",
+      "description": "Compact queue action in the home header.",
+      "html": "<button class=\"ds-icon\" aria-label=\"Open queue\" title=\"Queue / Open links\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 5h16M4 10h16M4 15h9m-9 5h9m4-5 5 3-5 3z\"/></svg></button>",
+      "css": ".ds-icon{color:var(--text,#f5f5f5);border:0;background:transparent;width:28px;height:28px;display:grid;place-items:center;border-radius:5px;padding:5px;cursor:pointer}.ds-icon svg{width:18px;height:18px}.ds-icon:hover{background:#ffffff15}.ds-icon:focus-visible{outline:2px solid #fff;outline-offset:3px}.ds-icon:disabled{opacity:.35;cursor:default}"
+    },
+    {
+      "name": "Paste field",
+      "kind": "input",
+      "refersTo": "link-field",
+      "description": "Multiline links field with the adjacent Play action.",
+      "html": "<div class=\"ds-field\"><textarea class=\"ds-links\" aria-label=\"Video links\" rows=\"2\" placeholder=\"Paste a video link\" spellcheck=\"false\"></textarea><button class=\"ds-field-play\">Play</button></div>",
+      "css": ".ds-field{display:flex;align-items:center;gap:9px;border:1px solid #555;border-radius:10px;background:var(--field,#242424);padding:8px 9px 8px 11px}.ds-field:focus-within{border-color:#b8b8b8}.ds-links{font:13px -apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;color:var(--text,#f5f5f5);background:transparent;border:0;resize:vertical;min-height:34px;max-height:90px;line-height:18px;flex:1;min-width:0;padding:0;caret-color:var(--accent,#ff4b4b)}.ds-links:focus-visible{outline:none}.ds-links::placeholder{color:#b8b8b8}.ds-field-play{font:650 13px -apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;background:var(--accent,#ff4b4b);color:#141414;border:0;border-radius:7px;padding:8px 14px;cursor:pointer}.ds-field-play:hover{background:#ff7272}.ds-field-play:focus-visible{outline:2px solid #fff;outline-offset:3px}"
+    },
+    {
+      "name": "Current queue row",
+      "kind": "custom",
+      "refersTo": "queue-row-current",
+      "description": "Current-item background, play action and explicit row controls.",
+      "html": "<div class=\"ds-row\"><button class=\"ds-item\" aria-label=\"Play video\"><span class=\"ds-index\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m9 5 11 7-11 7z\" fill=\"currentColor\"/></svg></span><span class=\"ds-copy\"><span class=\"ds-title\">Video title</span><span class=\"ds-source\">youtube.com</span></span></button><button class=\"ds-row-action\" aria-label=\"Move up\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 15 6-6 6 6\"/></svg></button><button class=\"ds-row-action\" aria-label=\"Remove video\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"m6 6 12 12M18 6 6 18\"/></svg></button></div>",
+      "css": ".ds-row{font:13px -apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;color:var(--text,#f5f5f5);display:flex;align-items:center;gap:7px;padding:7px 6px;border-radius:7px;min-height:48px;background:#2c2525}.ds-row:hover{background:#2c2525}.ds-item{display:flex;align-items:center;gap:9px;flex:1;min-width:0;text-align:left;padding:0;background:none;border:0;color:inherit;cursor:pointer}.ds-index{width:22px;flex:none;text-align:center;color:var(--accent,#ff4b4b)}.ds-index svg{width:18px;height:18px}.ds-copy{min-width:0}.ds-title,.ds-source{display:block;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ds-title{font-weight:500;max-width:245px}.ds-source{color:var(--muted,#b8b8b8);margin-top:4px;max-width:225px}.ds-row-action{border:0;background:transparent;width:22px;height:25px;border-radius:5px;padding:4px;display:grid;place-items:center;color:inherit;cursor:pointer}.ds-row-action svg{width:14px;height:14px}.ds-row-action:hover{background:#ffffff15}.ds-item:focus-visible,.ds-row-action:focus-visible{outline:2px solid #fff;outline-offset:3px}"
+    },
+    {
+      "name": "Video timeline",
+      "kind": "input",
+      "description": "Thin red progress track with a round seek thumb.",
+      "html": "<input class=\"ds-timeline\" aria-label=\"Video timeline\" type=\"range\" min=\"0\" max=\"100\" step=\"0.1\" value=\"35\">",
+      "css": ".ds-timeline{display:block;width:100%;height:15px;margin:0 0 1px;padding:0;cursor:pointer;accent-color:var(--accent,#ff4b4b);appearance:none;background:transparent}.ds-timeline::-webkit-slider-runnable-track{height:3px;border-radius:2px;background:linear-gradient(to right,var(--accent,#ff4b4b) 35%,#ffffff66 35%)}.ds-timeline::-webkit-slider-thumb{appearance:none;width:10px;height:10px;border-radius:50%;background:var(--accent,#ff4b4b);margin-top:-3.5px}.ds-timeline:focus-visible{outline:2px solid white;outline-offset:2px}.ds-timeline:disabled{cursor:default}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Familiar YouTube-like controls",
+    "overview": "Perch uses a compact dark interface for pasting links, starting playback and managing a queue. The confirmed direction is basic: a paste field, Play and familiar video controls. The video occupies the player; controls appear over its edges.\n\nThis record captures the current implementation in `src/shell.css` and `src/player-ui.js`. It preserves system typography, flat surfaces and the existing red accent. No additional visual identity is implied by the name.",
+    "keyCharacteristics": [
+      "Compact system text and labelled icon controls.",
+      "Dark shell and video overlays with one red accent.",
+      "A separate queue window with explicit playback and reorder actions.",
+      "Controls that fade after inactivity and return with pointer movement or keyboard focus."
+    ],
+    "rules": [],
+    "dos": [
+      "Do preserve the basic paste field, Play and queue flow.",
+      "Do use system text, familiar video icons and visible keyboard focus.",
+      "Do keep gradients behind video controls where they improve readability.",
+      "Do honour reduced-motion preferences and restore controls on focus."
+    ],
+    "donts": [
+      "Don't introduce a dashboard or decorative UI around the player.",
+      "Don't add remote fonts, decorative artwork or decorative gradients.",
+      "Don't replace explicit queue actions with undiscoverable gestures."
+    ]
+  }
+}

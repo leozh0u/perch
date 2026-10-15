@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-15T03:18:49.044Z",
+  "platform": "darwin",
+  "results": [
+    {
+      "name": "reject unsafe and invalid URLs without mutating queue",
+      "status": "pass"
+    },
+    {
+      "name": "batch queue and real media playback",
+      "status": "pass"
+    },
+    {
+      "name": "buttons, conventional keyboard seeks, volume, speed and scrubber",
+      "status": "pass"
+    },
+    {
+      "name": "queue remains editable while video plays; stable identity through reorder",
+      "status": "pass"
+    },
+    {
+      "name": "hover hides controls and keyboard focus keeps controls visible",
+      "status": "pass"
+    },
+    {
+      "name": "native panel flags, resize and pin toggle",
+      "status": "pass"
+    },
+    {
+      "name": "next, automatic advance, active removal and empty recovery",
+      "status": "pass"
+    },
+    {
+      "name": "two players require Settings opt-in, cap at two, avoid duplicates, isolate controls",
+      "status": "pass"
+    },
+    {
+      "name": "no-video and network failures recover through the same queue",
+      "status": "pass"
+    }
+  ]
+}

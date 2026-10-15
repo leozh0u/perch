@@ -1,0 +1,27 @@
+{
+  "name": "perch-player",
+  "productName": "Perch",
+  "version": "0.1.0",
+  "description": "A floating video player for macOS, with familiar controls and a queue.",
+  "main": "src/main.cjs",
+  "author": "Leo Zhou <zhouleo2007@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "esbuild src/preload.js --bundle --platform=node --external:electron --outfile=dist/preload.cjs",
+    "start": "npm run build && electron .",
+    "test": "node --test tests/unit.test.cjs",
+    "verify": "npm run build && node scripts/verify.mjs",
+    "package": "npm run build && node scripts/package.mjs",
+    "dist": "npm run build && node scripts/package.mjs --zip"
+  },
+  "devDependencies": {
+    "@electron/packager": "20.3.0",
+    "electron": "44.7.2",
+    "esbuild": "0.25.12",
+    "playwright": "1.64.1"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}
