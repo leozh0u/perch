@@ -111,3 +111,5 @@ The public YouTube page supplied all 13 chapters for NeetCode's Dynamic Programm
 A focused Ponytail/security review and independent static diff review found no blocking findings. Visibility IPC retains owning-main-frame checks; chapter titles remain plain text and links are never followed. No new dependency, OS permission or service was introduced. See [sanitised evidence](evidence/0.1.5.json) and [workflow results](evidence/workflows.json). No new blanket security or streaming guarantee is claimed.
 
 Final ZIP SHA-256: `f6965618022521bd8f58ba9fd8243df24ad7bd61b9511d70665911fbec6e9a06`. Strict/deep signature verification passes, packaged runtime/preload matches source, and production fuse protections remain enabled. The normal app is installed at `/Applications/Perch.app`.
+
+The [0.1.5 preview](https://github.com/leozh0u/perch/releases/tag/v0.1.5) is published. GitHub’s asset digest matches the final ZIP above. [CI 38695296539](https://github.com/leozh0u/perch/actions/runs/38695296539) passed for source `b3d9bfd8cfddb64b72b3a4485c29559e25550b25`.
