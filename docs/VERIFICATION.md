@@ -113,3 +113,13 @@ A focused Ponytail/security review and independent static diff review found no b
 Final ZIP SHA-256: `f6965618022521bd8f58ba9fd8243df24ad7bd61b9511d70665911fbec6e9a06`. Strict/deep signature verification passes, packaged runtime/preload matches source, and production fuse protections remain enabled. The normal app is installed at `/Applications/Perch.app`.
 
 The [0.1.5 preview](https://github.com/leozh0u/perch/releases/tag/v0.1.5) is published. GitHub’s asset digest matches the final ZIP above. [CI 38695296539](https://github.com/leozh0u/perch/actions/runs/38695296539) passed for source `b3d9bfd8cfddb64b72b3a4485c29559e25550b25`.
+
+## 0.1.6 video offset recovery
+
+15 October 2026: Leo reported a video shifted/cropped inside the native window. The affected installed session showed YouTube's internal mini-player controls and homepage route. A synthetic regression failed on 0.1.5 with x=272 rather than x=0 after transformed/contained ancestors and an offset .html5-video-container were introduced. Source effects can establish a new containing block for fixed-position descendants; see [MDN's containing-block rules](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Display/Containing_block).
+
+The stylesheet now neutralises those effects only on the selected video's ancestor chain and anchors YouTube's inner video container to the player. The source video stays in its original DOM; no video replacement, reload, playback command or navigation is part of the layout correction. The regression checks full-window geometry through source style changes, a 320-point resize and return to a generic page. Fifteen Electron workflows and six unit groups pass, including ad Skip, captions and chapters; formatting passes.
+
+Native installed 0.1.6 confirmation: reopened the same queued video near the saved position and observed it fill the window. Pressing I entered YouTube's internal mini-player/homepage route; the video continued to fill Perch instead of shifting. Pressing I again returned to the normal watch page. The video was left paused and unmuted near its saved position. No private queue URL, title or screenshot is published. A separate isolated public button-driven mini-player check timed out and is not counted as a pass. Sanitised results: [layout-0.1.6.json](evidence/layout-0.1.6.json).
+
+Release and installed ASAR runtime/preload match source; strict/deep signature and production fuse checks pass. ZIP SHA-256: `3050ecde0e575a59457de65cf500374ddeb35529676a8f8208909fdc2f4e18a7`. Existing platform, distribution and public streaming limits still apply.

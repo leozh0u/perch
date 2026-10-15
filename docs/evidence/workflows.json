@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-15T06:52:17.340Z",
+  "date": "2026-10-15T19:24:32.283Z",
   "platform": "darwin",
   "results": [
     {
@@ -20,6 +20,10 @@
     },
     {
       "name": "buttons, conventional keyboard seeks, volume, speed and scrubber",
+      "status": "pass"
+    },
+    {
+      "name": "site layout changes cannot offset the video inside the window",
       "status": "pass"
     },
     {

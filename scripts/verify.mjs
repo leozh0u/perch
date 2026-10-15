@@ -227,6 +227,64 @@ try {
     await overlay.getByLabel('Video timeline').press('ArrowRight');
     assert.ok((await player.locator('video').evaluate((video) => video.currentTime)) < 22);
   });
+  await check('site layout changes cannot offset the video inside the window', async () => {
+    await player.evaluate(() => {
+      const video = document.querySelector('video');
+      const wrapper = document.createElement('div');
+      wrapper.id = 'layout-fixture';
+      wrapper.style.cssText =
+        'position:relative;left:210px;top:35px;transform:translate(12px, 8px);contain:paint;will-change:transform';
+      const site = document.createElement('div');
+      site.id = 'movie_player';
+      const container = document.createElement('div');
+      container.className = 'html5-video-container';
+      container.style.cssText =
+        'position:absolute;left:37px;top:19px;transform:translate(5px, 9px)';
+      video.before(wrapper);
+      wrapper.append(site);
+      site.append(container);
+      container.append(video);
+    });
+    const assertFillsWindow = async () => {
+      const geometry = await player.locator('video').evaluate((video) => {
+        const r = video.getBoundingClientRect();
+        return {
+          x: r.x,
+          y: r.y,
+          width: r.width,
+          height: r.height,
+          viewportWidth: innerWidth,
+          viewportHeight: innerHeight,
+        };
+      });
+      assert.equal(geometry.x, 0, 'Video must start at the window left edge');
+      assert.equal(geometry.y, 0, 'Video must start at the window top edge');
+      assert.equal(geometry.width, geometry.viewportWidth);
+      assert.equal(geometry.height, geometry.viewportHeight);
+    };
+    await assertFillsWindow();
+    await application.evaluate(({ BrowserWindow }) =>
+      BrowserWindow.getAllWindows()[0].setSize(320, 180),
+    );
+    await assertFillsWindow();
+    await player.evaluate(() => {
+      const wrapper = document.querySelector('#layout-fixture');
+      wrapper.style.cssText =
+        'position:relative;left:-140px;top:90px;filter:blur(0);content-visibility:auto';
+      document.querySelector('.html5-video-container').style.margin = '23px';
+    });
+    await assertFillsWindow();
+    await player.screenshot({ path: path.join(output, 'layout-recovery.png') });
+    await player.evaluate(() => {
+      const wrapper = document.querySelector('#layout-fixture');
+      wrapper.before(document.querySelector('video'));
+      wrapper.remove();
+    });
+    await assertFillsWindow();
+    await application.evaluate(({ BrowserWindow }) =>
+      BrowserWindow.getAllWindows()[0].setSize(480, 270),
+    );
+  });
   await check('YouTube ad controls accept native clicks and keyboard input', async () => {
     const overlay = player.locator('#perch-player');
     const paused = await player.locator('video').evaluate((video) => video.paused);

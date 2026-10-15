@@ -4,7 +4,7 @@
 
 A free floating video player for macOS. Paste a YouTube link, put it beside your work, and keep watching as you switch apps.
 
-**[Download for Apple Silicon](https://github.com/leozh0u/perch/releases/download/v0.1.5/Perch-mac-arm64.zip)** · [All releases](https://github.com/leozh0u/perch/releases) · [Report a bug](https://github.com/leozh0u/perch/issues/new/choose)
+**[Download for Apple Silicon](https://github.com/leozh0u/perch/releases/download/v0.1.6/Perch-mac-arm64.zip)** · [All releases](https://github.com/leozh0u/perch/releases) · [Report a bug](https://github.com/leozh0u/perch/issues/new/choose)
 
 macOS 13 or later, M1 or newer. Free and open source under the [MIT licence](LICENSE). No account, subscription or API key required by Perch.
 
@@ -14,7 +14,7 @@ Perch floating over VS Code on my Mac. Hold or drag the video to move it; drag a
 
 ## Install
 
-1. **[Download Perch-mac-arm64.zip](https://github.com/leozh0u/perch/releases/download/v0.1.5/Perch-mac-arm64.zip).** You do not need to download the source-code ZIP.
+1. **[Download Perch-mac-arm64.zip](https://github.com/leozh0u/perch/releases/download/v0.1.6/Perch-mac-arm64.zip).** You do not need to download the source-code ZIP.
 2. In Finder, open **Downloads** and double-click the ZIP to unzip it. Safari may already have unzipped it.
 3. Drag **Perch.app** into **Applications**.
 4. Open **Applications**, then double-click **Perch**.

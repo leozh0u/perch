@@ -6,6 +6,21 @@ body {
 body {
   visibility: hidden !important;
 }
+/* Site layout effects must not become the fixed player's containing block. */
+html:has(video.perch-video),
+body:has(video.perch-video),
+body :has(video.perch-video) {
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: none !important;
+  perspective: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  contain: none !important;
+  will-change: auto !important;
+  content-visibility: visible !important;
+}
 #movie_player {
   visibility: visible !important;
   position: fixed !important;
@@ -13,10 +28,18 @@ body {
   width: 100vw !important;
   height: 100vh !important;
   min-width: 0 !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
   z-index: 2147483645 !important;
   background: #000 !important;
 }
 #movie_player .html5-video-container {
+  position: absolute !important;
+  inset: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
   width: 100% !important;
   height: 100% !important;
 }
@@ -26,6 +49,10 @@ video.perch-video {
   inset: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
   object-fit: contain !important;
   transform: none !important;
   z-index: 2147483645 !important;
