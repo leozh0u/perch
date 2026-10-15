@@ -1,0 +1,43 @@
+html,
+body {
+  background: #121212 !important;
+  overflow: hidden !important;
+}
+body {
+  visibility: hidden !important;
+}
+#movie_player {
+  visibility: visible !important;
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  min-width: 0 !important;
+  z-index: 2147483645 !important;
+  background: #000 !important;
+}
+#movie_player .html5-video-container {
+  width: 100% !important;
+  height: 100% !important;
+}
+video.perch-video {
+  visibility: visible !important;
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  object-fit: contain !important;
+  transform: none !important;
+  z-index: 2147483645 !important;
+  background: #000 !important;
+}
+#movie_player video.perch-video {
+  position: absolute !important;
+  z-index: auto !important;
+}
+.ytp-chrome-bottom,
+.ytp-chrome-top,
+.ytp-gradient-top,
+.ytp-gradient-bottom {
+  visibility: hidden !important;
+}

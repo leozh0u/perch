@@ -25,3 +25,5 @@ Public repository leozh0u/perch, under ~/Projects/Technical Projects/perch. A ru
 14 October refinement: new installs start unpinned; the pin remains optional. Option+M globally mutes all open players if any is unmuted, or unmutes all when all are muted, without pausing. Focused M keeps controlling one player.
 
 Follow-up: a quick tap on the video plays/pauses; hold or drag any non-control video/overlay region to move the window. Buttons/sliders retain their actions. Global mute must treat zero volume as silent and restore the last audible volume on unmute.
+
+14 October branding: use a play button perched on a chair. Keep the menu bar icon at 18 points; use the matching mark in the app, README and download.

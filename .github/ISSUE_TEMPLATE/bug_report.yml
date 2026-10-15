@@ -1,0 +1,29 @@
+name: Bug report
+description: Report a problem with Perch.
+body:
+  - type: textarea
+    id: steps
+    attributes:
+      label: What happened?
+      description: Include the steps, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Perch version
+      placeholder: '0.1.2'
+    validations:
+      required: true
+  - type: input
+    id: mac
+    attributes:
+      label: macOS version and chip
+      placeholder: 'macOS 26.6.2, Apple M1'
+    validations:
+      required: true
+  - type: textarea
+    id: media
+    attributes:
+      label: Public video link or screenshot (optional)
+      description: Share only material you are comfortable making public. Remove personal information. Report security issues privately.

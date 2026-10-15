@@ -4,59 +4,195 @@ import path from 'node:path';
 import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const output = path.join(root, 'output/playwright'); await fs.mkdir(output, { recursive: true });
+const output = path.join(root, 'output/playwright');
+await fs.mkdir(output, { recursive: true });
 const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'perch-youtube-'));
 let application;
 try {
-  application = await electron.launch({ args: [root, '--perch-test'], env: { ...process.env, PERCH_TEST_DATA: directory } });
+  application = await electron.launch({
+    args: [root, '--perch-test'],
+    env: { ...process.env, PERCH_TEST_DATA: directory },
+  });
   const page = await application.firstWindow();
   await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].hide());
   await page.waitForSelector('#links');
   await page.locator('#links').fill('https://www.youtube.com/watch?v=aqz-KE-bpKQ');
   await page.getByRole('button', { name: 'Play', exact: true }).click();
   let played = false;
-  try { await page.waitForFunction(() => [...document.querySelectorAll('video')].some(video => video.currentTime > 2 && video.readyState >= 2 && video.videoWidth > 0), null, { timeout: 45000 }); played = true; } catch {}
+  try {
+    await page.waitForFunction(
+      () =>
+        [...document.querySelectorAll('video')].some(
+          (video) => video.currentTime > 2 && video.readyState >= 2 && video.videoWidth > 0,
+        ),
+      null,
+      { timeout: 45000 },
+    );
+    played = true;
+  } catch {}
   await page.mouse.move(240, 200);
-  await page.screenshot({ path: path.join(output, played ? 'youtube.png' : 'youtube-failure.png') });
-  const evidence = await page.evaluate(() => ({ title: document.title, url: location.href, video: [...document.querySelectorAll('video')].map(video => ({ currentTime: video.currentTime, duration: video.duration, width: video.videoWidth, paused: video.paused, error: video.error?.message })), text: document.body.innerText.slice(0, 4000) }));
-  await fs.writeFile(path.join(output, 'youtube-result.json'), JSON.stringify({ played, ...evidence }, null, 2));
-  console.log(JSON.stringify({ played, title: evidence.title, video: evidence.video, text: played ? undefined : evidence.text }, null, 2));
+  await page.screenshot({
+    path: path.join(output, played ? 'youtube.png' : 'youtube-failure.png'),
+  });
+  const evidence = await page.evaluate(() => ({
+    title: document.title,
+    url: location.href,
+    video: [...document.querySelectorAll('video')].map((video) => ({
+      currentTime: video.currentTime,
+      duration: video.duration,
+      width: video.videoWidth,
+      paused: video.paused,
+      error: video.error?.message,
+    })),
+    text: document.body.innerText.slice(0, 4000),
+  }));
+  await fs.writeFile(
+    path.join(output, 'youtube-result.json'),
+    JSON.stringify({ played, ...evidence }, null, 2),
+  );
+  console.log(
+    JSON.stringify(
+      {
+        played,
+        title: evidence.title,
+        video: evidence.video,
+        text: played ? undefined : evidence.text,
+      },
+      null,
+      2,
+    ),
+  );
   if (played) {
     await page.locator('#perch-player').getByRole('button', { name: 'Pause', exact: true }).click();
     await page.waitForFunction(() => document.querySelector('video')?.paused === true);
-    await page.locator('#perch-player').getByRole('button', { name: 'Forward 10 seconds', exact: true }).click();
-    if (await page.locator('video').evaluate(video => video.paused)) await page.locator('#perch-player').getByRole('button', { name: 'Play', exact: true }).click();
-    const started = await page.locator('video').evaluate(video => video.currentTime);
+    await page
+      .locator('#perch-player')
+      .getByRole('button', { name: 'Forward 10 seconds', exact: true })
+      .click();
+    if (await page.locator('video').evaluate((video) => video.paused))
+      await page
+        .locator('#perch-player')
+        .getByRole('button', { name: 'Play', exact: true })
+        .click();
+    const started = await page.locator('video').evaluate((video) => video.currentTime);
     try {
-      await page.waitForFunction(previous => { const video = document.querySelector('#movie_player video.html5-main-video') || document.querySelector('video'); return video && video.currentTime > previous + 35 && video.readyState >= 2; }, started, { timeout: 60000 });
+      await page.waitForFunction(
+        (previous) => {
+          const video =
+            document.querySelector('#movie_player video.html5-main-video') ||
+            document.querySelector('video');
+          return video && video.currentTime > previous + 35 && video.readyState >= 2;
+        },
+        started,
+        { timeout: 60000 },
+      );
     } catch (error) {
-      const after = await page.evaluate(() => ({ video: [...document.querySelectorAll('video')].map(v => ({ time: v.currentTime, paused: v.paused, ready: v.readyState, error: v.error?.message })), text: document.body.innerText.slice(0, 4000) }));
-      await fs.writeFile(path.join(output, 'youtube-result.json'), JSON.stringify({ ...evidence, played, started, after, longPlaybackConfirmed: false }, null, 2));
+      const after = await page.evaluate(() => ({
+        video: [...document.querySelectorAll('video')].map((v) => ({
+          time: v.currentTime,
+          paused: v.paused,
+          ready: v.readyState,
+          error: v.error?.message,
+        })),
+        text: document.body.innerText.slice(0, 4000),
+      }));
+      await fs.writeFile(
+        path.join(output, 'youtube-result.json'),
+        JSON.stringify(
+          { ...evidence, played, started, after, longPlaybackConfirmed: false },
+          null,
+          2,
+        ),
+      );
       await page.screenshot({ path: path.join(output, 'youtube-failure.png') });
       throw error;
     }
-    await fs.writeFile(path.join(output, 'youtube-result.json'), JSON.stringify({ played: true, longPlaybackConfirmed: true, ...evidence, checkedAt: new Date().toISOString() }, null, 2));
+    await fs.writeFile(
+      path.join(output, 'youtube-result.json'),
+      JSON.stringify(
+        {
+          played: true,
+          longPlaybackConfirmed: true,
+          ...evidence,
+          checkedAt: new Date().toISOString(),
+        },
+        null,
+        2,
+      ),
+    );
     await page.evaluate(() => getSelection()?.removeAllRanges());
     await page.mouse.move(220, 220);
-    await page.waitForFunction(() => Number(getComputedStyle(document.querySelector('#perch-player').shadowRoot.querySelector('.top')).opacity) > .99);
+    await page.waitForFunction(
+      () =>
+        Number(
+          getComputedStyle(document.querySelector('#perch-player').shadowRoot.querySelector('.top'))
+            .opacity,
+        ) > 0.99,
+    );
     await page.screenshot({ path: path.join(output, 'youtube.png') });
     const queuePromise = application.waitForEvent('window');
-    await page.locator('#perch-player').getByRole('button', { name: 'Open queue', exact: true }).click();
-    const queue = await queuePromise; await queue.waitForSelector('#links');
+    await page
+      .locator('#perch-player')
+      .getByRole('button', { name: 'Open queue', exact: true })
+      .click();
+    const queue = await queuePromise;
+    await queue.waitForSelector('#links');
     await page.locator('#perch-player').getByLabel('Volume', { exact: true }).focus();
     await page.locator('#perch-player').getByLabel('Volume', { exact: true }).fill('0');
     await queue.evaluate(() => window.perch.action('muteAll'));
-    await page.waitForFunction(() => { const v = document.querySelector('video'); return v && !v.muted && v.volume > 0 && !v.paused; });
+    await page.waitForFunction(() => {
+      const v = document.querySelector('video');
+      return v && !v.muted && v.volume > 0 && !v.paused;
+    });
     await queue.evaluate(() => window.perch.action('muteAll'));
     await page.waitForFunction(() => document.querySelector('video')?.muted === true);
     await queue.evaluate(() => window.perch.action('muteAll'));
-    await page.waitForFunction(() => { const v = document.querySelector('video'); return v && !v.muted && v.volume > 0 && !v.paused; });
+    await page.waitForFunction(() => {
+      const v = document.querySelector('video');
+      return v && !v.muted && v.volume > 0 && !v.paused;
+    });
     await page.waitForTimeout(3000);
-    const audible = await page.locator('video').evaluate(v => !v.muted && v.volume > 0 && !v.paused);
-    if (!audible) throw new Error('YouTube did not retain audible playback after global unmute');
-    await fs.writeFile(path.join(output, 'youtube-result.json'), JSON.stringify({ played: true, longPlaybackConfirmed: true, zeroVolumeRecovery: true, ...evidence, checkedAt: new Date().toISOString() }, null, 2));
-    await queue.locator('#links').fill('https://www.youtube.com/watch?v=Z4E6ZT-M2gA'); await queue.getByRole('button', { name: 'Add to queue', exact: true }).click();
-    await queue.waitForFunction(() => !document.querySelectorAll('.item-title')[1]?.textContent.startsWith('YouTube ·'), { timeout: 8000 }).catch(() => {});
+    const afterUnmute = await page.locator('video').evaluate((v) => ({
+      muted: v.muted,
+      volume: v.volume,
+      paused: v.paused,
+      currentTime: v.currentTime,
+      readyState: v.readyState,
+    }));
+    if (afterUnmute.muted || afterUnmute.volume === 0 || afterUnmute.paused) {
+      await page.screenshot({ path: path.join(output, 'youtube-failure.png') });
+      await fs.writeFile(
+        path.join(output, 'youtube-result.json'),
+        JSON.stringify({ ...evidence, afterUnmute, zeroVolumeRecovery: false }, null, 2),
+      );
+      throw new Error(`YouTube did not retain audible playback: ${JSON.stringify(afterUnmute)}`);
+    }
+    await fs.writeFile(
+      path.join(output, 'youtube-result.json'),
+      JSON.stringify(
+        {
+          played: true,
+          longPlaybackConfirmed: true,
+          zeroVolumeRecovery: true,
+          ...evidence,
+          checkedAt: new Date().toISOString(),
+        },
+        null,
+        2,
+      ),
+    );
+    await queue.locator('#links').fill('https://www.youtube.com/watch?v=eRsGyueVLvQ');
+    await queue.getByRole('button', { name: 'Add to queue', exact: true }).click();
+    await queue
+      .waitForFunction(
+        () => !document.querySelectorAll('.item-title')[1]?.textContent.startsWith('YouTube ·'),
+        null,
+        { timeout: 8000 },
+      )
+      .catch(() => {});
     await queue.screenshot({ path: path.join(output, 'youtube-queue.png') });
   } else process.exitCode = 1;
-} finally { await application?.close(); await fs.rm(directory, { recursive: true, force: true }); }
+} finally {
+  await application?.close();
+  await fs.rm(directory, { recursive: true, force: true });
+}

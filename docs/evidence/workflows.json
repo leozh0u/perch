@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-15T03:35:10.975Z",
+  "date": "2026-10-15T04:03:36.867Z",
   "platform": "darwin",
   "results": [
     {
@@ -8,6 +8,10 @@
     },
     {
       "name": "batch queue and real media playback",
+      "status": "pass"
+    },
+    {
+      "name": "remote pages cannot open popups, download files or navigate to local files",
       "status": "pass"
     },
     {

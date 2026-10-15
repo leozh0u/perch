@@ -94,7 +94,7 @@
   ],
   "narrative": {
     "northStar": "Familiar YouTube-like controls",
-    "overview": "Perch uses a compact dark interface for pasting links, starting playback and managing a queue. The confirmed direction is basic: a paste field, Play and familiar video controls. The video occupies the player; controls appear over its edges.\n\nThis record captures the current implementation in `src/shell.css` and `src/player-ui.js`. It preserves system typography, flat surfaces and the existing red accent. No additional visual identity is implied by the name.",
+    "overview": "Perch uses a compact dark interface for pasting links, starting playback and managing a queue. The confirmed direction is basic: a paste field, Play and familiar video controls. The video occupies the player; controls appear over its edges.\n\nThis record captures the current implementation in `src/shell.css` and `src/player-ui.js`. It preserves system typography, flat surfaces and the existing red accent. The mark is a red play button sitting on a simple chair. Small interface and 18-point menu bar marks use a monochrome version.",
     "keyCharacteristics": [
       "Compact system text and labelled icon controls.",
       "Dark shell and video overlays with one red accent.",

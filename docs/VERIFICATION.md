@@ -6,16 +6,16 @@
 
 `npm test`: 6 passing unit groups for YouTube URL forms/timestamps, unsafe schemes/credentials, atomic batch validation and queue limits, disconnected/negative-coordinate display recovery, local-state corruption recovery and duration formatting.
 
-`npm run verify`: 9 passing actual-Electron workflow groups using a generated 40-second H.264/AAC video in an isolated temporary profile. The fixture enforces Trusted Types with no allowed policy, exercising the same DOM-construction constraint encountered on YouTube.
+`npm run verify`: 10 passing actual-Electron workflow groups using a generated 40-second H.264/AAC video in an isolated temporary profile. The fixture enforces Trusted Types with no allowed policy, exercising the same DOM-construction constraint encountered on YouTube.
 
 - Invalid URLs do not change the queue.
-- Batch links produce real video playback. Remote pages have no Node `require` or Perch bridge.
+- Batch links produce real video playback. Remote pages have no Node `require` or Perch bridge. A hostile fixture cannot open a popup, download a file or navigate to a local file; the settings callback receives no Electron event.
 - Space/K, arrows/J/L, pause/play, seek buttons, timeline, mute and speed work. Playback keys keep working after a button click, and holding a toggle key does not repeatedly flip its state. Slider arrows do not also seek the video.
 - Queue reorder retains identity while playback continues.
 - Hover hides controls; keyboard focus keeps them accessible.
 - Native window flags, unpinned default, pin toggle, pointer dragging, sandbox settings and minimum 320 x 180 size are checked through Electron. These checks establish configuration, not physical fullscreen parity.
 - Next, genuine ended-event auto-next, hidden auto-next, active-item removal and empty-queue recovery work.
-- No-video and failed-network pages retain an actionable error and recover through the queue. Closing during a delayed page load suppresses later autoplay, including a subsequent site play attempt and late ended event.
+- No-video and failed-network pages retain an actionable error and recover through the queue. Removing the selected media pauses it and restores missing-video recovery; a replacement video resumes, and Retry keeps keyboard focus across status updates. Closing during a delayed page load suppresses later autoplay, including a subsequent site play attempt and late ended event.
 - Single-player default, Settings opt-in, maximum two, atomic third-player rejection, duplicate reuse, independent pause, global mute/unmute without changing pause, and disabling dual mode are checked. Selected duplicate Play preserves the document and pause state. Zero-volume global unmute restores audible volume in both players.
 
 Generated screenshots and machine results are kept in ignored `output/playwright/`; selected public screenshots are copied to `docs/images/`. Tests use synthetic profiles and do not import browser cookies.
@@ -51,3 +51,15 @@ The 0.1.1 patch adds video-wide tap/hold dragging, keeps focused playback keys w
 The [0.1.1 preview ZIP](https://github.com/leozh0u/perch/releases/tag/v0.1.1) is uploaded and its GitHub-reported digest matches the local artifact. The 0.1.0 release is labelled superseded.
 
 Patch source CI passed: [38677195931](https://github.com/leozh0u/perch/actions/runs/38677195931) (macOS install, build, unit tests and dependency audit).
+
+## 0.1.2 public cleanup
+
+The follow-up adds the chair/play mark, a viewport-recorded animated README demo and a four-step end-user download guide. Source/contributor instructions are separate from the download flow. Command+Shift+P no longer opens Perch; only Option+Space and Option+M are globally registered.
+
+A read-only code pass and a separate security pass found three correctness/usability issues and two low-risk hardening items, all corrected and regression-checked. See [SECURITY_REVIEW.md](SECURITY_REVIEW.md). No fourth round of the earlier three-round design critique was run.
+
+Current source passes 10 actual-Electron workflow groups, 6 unit groups, formatting and a zero-advisory dependency audit. Production fuse readback confirms RunAsNode, NodeOptions and CLI inspector disabled, ASAR integrity validation and ASAR-only loading enabled. A separate inspectable test package launches under Playwright; the production app opens through native macOS controls without that inspector. The new installed app's chair mark and basic link screen were visually checked. The 36-pixel tray image is displayed at 18 points.
+
+The production app passes strict/deep ad-hoc signature verification and is installed at `/Applications/Perch.app`. ZIP SHA-256: `3338e1670c3ce7789ae9f1abe14d4d2d3050372a7764bdcde9a011c0f12948bd`. Earlier physical shortcut/fullscreen observations remain labelled by build above; this pass does not claim a new physical hardware check of every gesture.
+
+Public YouTube was rechecked after branding: more than 35 seconds after seek and zero-volume mute/unmute recovery passed. Two interim runs with native test-only audio silencing failed playback-state assertions; the final check uses normal browser audio and retains failure diagnostics. This is documented as a test-setting limitation, not proof that every background/site configuration works.

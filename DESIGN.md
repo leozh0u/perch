@@ -74,7 +74,7 @@ components:
 
 Perch uses a compact dark interface for pasting links, starting playback and managing a queue. The confirmed direction is basic: a paste field, Play and familiar video controls. The video occupies the player; controls appear over its edges.
 
-This record captures the current implementation in `src/shell.css` and `src/player-ui.js`. It preserves system typography, flat surfaces and the existing red accent. No additional visual identity is implied by the name.
+This record captures the current implementation in `src/shell.css` and `src/player-ui.js`. It preserves system typography, flat surfaces and the existing red accent. The mark is a red play button sitting on a simple white chair, requested by Leo on 14 October 2026. The app icon uses a charcoal rounded square; the menu bar and small interface marks use a monochrome version. The tray stays 18 points wide and high.
 
 **Key Characteristics:**
 
@@ -134,7 +134,7 @@ There are no CSS box shadows. The queue uses background changes for hover and cu
 
 ## Shapes
 
-Controls and rows have modest rounded corners, using the frontmatter radius tokens. The paste field has the largest radius and a thin grey border; focus within changes that border to muted grey. The timeline uses a 3px track and a round 10px thumb. Icons use a 24px viewbox with rounded caps and joins; the shared player icons use 1.8px strokes, while shell control icons use 1.7px strokes. The Perch mark uses a heavier stroke.
+Controls and rows have modest rounded corners, using the frontmatter radius tokens. The paste field has the largest radius and a thin grey border; focus within changes that border to muted grey. The timeline uses a 3px track and a round 10px thumb. Icons use a 24px viewbox with rounded caps and joins; the shared player icons use 1.8px strokes, while shell control icons use 1.7px strokes. The Perch mark uses a 1.4px stroke, with a solid play triangle.
 
 ## Components
 
