@@ -36,8 +36,12 @@ Bounds recovery for multiple displays is unit-tested. Actual display unplug/repl
 
 ## Independent review
 
-Three rounds completed, using a read-only critic. Round 1 found automatic next could reveal a hidden player; fixed and regression-tested. Round 2 found selected duplicate Play reloaded the source; fixed and regression-tested. Round 3 confirmed these fixes and close-during-load suppression, and flagged sustained YouTube playback evidence and publication as pending. The final YouTube run subsequently passed after the test waited for pause before resuming. The later unpinned-default and Option+M additions are covered by the actual-Electron tests and manual shortcut check; they did not receive a fourth critic round.
+Three rounds completed, using a read-only critic. Round 1 found automatic next could reveal a hidden player; fixed and regression-tested. Round 2 found selected duplicate Play reloaded the source; fixed and regression-tested. Round 3 confirmed these fixes and close-during-load suppression, and flagged sustained YouTube playback evidence and publication as pending. The final YouTube run subsequently passed after the test waited for pause before resuming. The later unpinned-default and Option+M additions are covered by the actual-Electron tests and installed-app shortcut registration/conflict reporting. Human Option+M verification is pending; they did not receive a fourth critic round.
 
 ## Build and dependencies
 
 The Apple Silicon app is packaged with ASAR and an ad-hoc local signature. Runtime minimum in the bundle is macOS 13. Developer ID signing/notarisation remain undone. `npm audit` reports zero known vulnerabilities in the current dependency lockfile. No updater or startup service is installed.
+
+## Published build
+
+The public [v0.1.0 preview](https://github.com/leozh0u/perch/releases/tag/v0.1.0) contains the Apple Silicon ZIP. Its GitHub-reported SHA-256 matches the local artifact: `a9353fc79e3efbd2da048ef1b2a14329440d04811dbebcc2d4af0fab9833dff3`. The same packaged app is installed in Applications and launches without a development server. GitHub Actions run [38675833984](https://github.com/leozh0u/perch/actions/runs/38675833984) passed install, build, unit tests and dependency audit.
