@@ -47,3 +47,7 @@ The Apple Silicon app is packaged with ASAR and an ad-hoc local signature. Runti
 The public [v0.1.0 preview](https://github.com/leozh0u/perch/releases/tag/v0.1.0) contains the Apple Silicon ZIP. Its GitHub-reported SHA-256 matches the local artifact: `a9353fc79e3efbd2da048ef1b2a14329440d04811dbebcc2d4af0fab9833dff3`. The same packaged app is installed in Applications and launches without a development server. GitHub Actions run [38675833984](https://github.com/leozh0u/perch/actions/runs/38675833984) passed install, build, unit tests and dependency audit.
 
 The 0.1.1 patch adds video-wide tap/hold dragging, keeps focused playback keys working after control clicks, restores nonzero volume on unmute, and suppresses late site play/ended events after close. The installed bundle passes codesign verification. ZIP SHA-256: `a677a4f65aa892410c6feebbddde25e0d0fe0041c56a51577545800a2d402df0`. Native center dragging and quick-tap pause passed; physical Option+M is not yet certified after the 0.1.0 failure.
+
+The [0.1.1 preview ZIP](https://github.com/leozh0u/perch/releases/tag/v0.1.1) is uploaded and its GitHub-reported digest matches the local artifact. The 0.1.0 release is labelled superseded.
+
+Patch source CI passed: [38677195931](https://github.com/leozh0u/perch/actions/runs/38677195931) (macOS install, build, unit tests and dependency audit).
