@@ -138,3 +138,10 @@ Fix: remove fixed-position containing-block effects only along the selected vide
 
 
 0.1.6 native recovery confirmed: the final app is installed. The original queued video resumed near the saved 6:24 position and was left paused/unmuted around 6:27. Native I toggled into YouTube's internal mini-player/homepage route with the video still filling the window, then back to the watch page. This is a direct installed-app check, separate from the isolated public button-transition attempt that timed out. ASAR/source, signature and fuse verification pass. No private source/title/screenshot is published. Remaining: push, public release/digest/CI and dated canonical record.
+
+
+## 0.1.6 delivery complete
+
+15 October 2026: runtime source `55d513eda0ef6db9923c43d897fa4648df39318a` is pushed as leozh0u with Leo Zhou <zhouleo2007@gmail.com> attribution. The [0.1.6 preview](https://github.com/leozh0u/perch/releases/tag/v0.1.6) is published. GitHub's 127,300,163-byte ZIP digest matches `3050ecde0e575a59457de65cf500374ddeb35529676a8f8208909fdc2f4e18a7`. README download links point to this version. The fixed app is installed, the original queue is intact, native nested mini-player entry/exit was checked, and only one normal Perch remains. The private canonical record is updated. Fifteen local Electron workflows, six unit groups and formatting pass; [Source CI 38794312466](https://github.com/leozh0u/perch/actions/runs/38794312466) passed.
+
+The available request is fulfilled: recover the offset video and prevent the reproduced source-layout failure. No unrelated code or app settings were changed. Exact original spontaneous triggering interaction was not captured; native entry/exit and layout regressions provide the recorded coverage. Existing streaming, signing and platform limits remain unchanged.
