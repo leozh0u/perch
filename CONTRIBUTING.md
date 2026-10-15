@@ -24,15 +24,15 @@ npm run verify
 npm audit
 ```
 
-`npm run verify` needs [FFmpeg](https://ffmpeg.org/) to generate a synthetic video. It drives the actual Electron app in a temporary profile, with native audio silenced to avoid test noise. It does not read your browser cookies. `npm run format` formats the source.
+`npm run verify` needs [FFmpeg](https://ffmpeg.org/) to generate a synthetic video. It drives the actual Electron app in a temporary profile, with invisible windows, no test tray icon and native audio silenced to avoid test noise. It does not read your browser cookies. `npm run format` formats the source.
 
 For changes to website/media integration, also run:
 
 ```sh
-node scripts/verify-youtube.mjs
+node scripts/verify-youtube.mjs --visible
 ```
 
-This uses a public YouTube video and an isolated profile. YouTube availability can affect the result. Raw evidence stays in ignored `output/`; selected public evidence goes in `docs/evidence/`.
+Quit your normal Perch first. This is an explicit visible native session with a temporary profile, one test app, normal browser audio and working shortcuts. Invisible website runs changed YouTube media behaviour on this Mac, so they are not used as the playback test. The synthetic workflow checks above stay invisible and silent. YouTube availability can affect the result. Raw evidence stays in ignored `output/`; selected public evidence goes in `docs/evidence/`.
 
 ## Build a Mac app
 

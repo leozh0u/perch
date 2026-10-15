@@ -32,6 +32,12 @@ button {
   place-items: center;
   padding: 6px;
   flex: none;
+  transition:
+    background-color 120ms ease-out,
+    transform 100ms ease-out;
+}
+button:not(:disabled):active {
+  transform: scale(0.94);
 }
 button:hover,
 select:hover {
@@ -99,6 +105,7 @@ button svg {
   text-shadow: 0 1px 3px #000;
 }
 .bottom {
+  display: var(--perch-bottom-display, block);
   bottom: 0;
   padding: 24px 12px 7px;
   background: linear-gradient(transparent, #000e);
@@ -281,6 +288,9 @@ select {
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  button:active {
+    transform: none !important;
+  }
   * {
     transition: none !important;
   }

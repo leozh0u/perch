@@ -4,17 +4,17 @@
 
 A free floating video player for macOS. Paste a YouTube link, put it beside your work, and keep watching as you switch apps.
 
-**[Download for Apple Silicon](https://github.com/leozh0u/perch/releases/download/v0.1.2/Perch-mac-arm64.zip)** · [All releases](https://github.com/leozh0u/perch/releases) · [Report a bug](https://github.com/leozh0u/perch/issues/new/choose)
+**[Download for Apple Silicon](https://github.com/leozh0u/perch/releases/download/v0.1.3/Perch-mac-arm64.zip)** · [All releases](https://github.com/leozh0u/perch/releases) · [Report a bug](https://github.com/leozh0u/perch/issues/new/choose)
 
 macOS 13 or later, M1 or newer. Free and open source under the [MIT licence](LICENSE). No account, subscription or API key required by Perch.
 
-<img src="docs/images/player.png" width="640" alt="Perch playing a YouTube video with its hover controls visible">
+<img src="docs/images/desktop.png" width="960" alt="Perch floating over VS Code on macOS while Subway Surfers gameplay plays">
 
-Perch on a Mac, with the hover controls visible. Hold or drag the video to move the window; drag an edge or corner to resize it. The screenshot shows *Big Buck Bunny*; film credits are below.
+Perch floating over VS Code on my Mac. Hold or drag the video to move it; drag an edge or corner to resize it.
 
 ## Install
 
-1. **[Download Perch-mac-arm64.zip](https://github.com/leozh0u/perch/releases/download/v0.1.2/Perch-mac-arm64.zip).** You do not need to download the source-code ZIP.
+1. **[Download Perch-mac-arm64.zip](https://github.com/leozh0u/perch/releases/download/v0.1.3/Perch-mac-arm64.zip).** You do not need to download the source-code ZIP.
 2. In Finder, open **Downloads** and double-click the ZIP to unzip it. Safari may already have unzipped it.
 3. Drag **Perch.app** into **Applications**.
 4. Open **Applications**, then double-click **Perch**.
@@ -32,7 +32,7 @@ No Node.js, terminal or browser extension is needed for this download. Online vi
 3. Click the **pin** if you want it above other apps. Perch starts unpinned.
 4. Press **Option+Space** from any app to hide or show it while audio keeps playing. **Option+M** mutes or unmutes all Perch players.
 
-To stop playback, use the player's close button. To quit the app, use **Perch > Quit Perch** or **Command+Q** while Perch is focused.
+Perch lives in the menu bar and does not take a Dock slot. Click its menu bar icon for Show / Hide, Queue, Settings or Quit Perch. Opening the app again reuses the running instance. To stop playback, use the player's close button.
 
 ## Why I built it
 
@@ -44,7 +44,7 @@ The player has a timeline, volume and speed controls that appear on hover. It al
 
 Paste a public YouTube video link, a supported HTTPS video URL, or a webpage containing a standard HTML video. Press Play. Drag a link into the link field if you prefer.
 
-To line up more videos, open the queue button or press **Command+O**. Paste several links, one per line. **Add to queue** keeps the current video playing. **Play** starts the first pasted link. Click a queued item to play it; use the small arrows to reorder it or the × button to remove it. Auto-next can advance through the queue when a video finishes. At the end of the queue, playback stops.
+To line up more videos, open the queue button or press **Command+O**. Paste several links, one per line. **Add to queue** keeps the current video playing. **Play** starts the first pasted link. Click a queued item to play it. Drag a row or its grip to reorder it; the red line shows where it will land. The small arrows also move rows, and × removes one. Rows slide into place and buttons respond to a press; Reduce Motion removes the movement. Auto-next can advance through the queue when a video finishes. At the end of the queue, playback stops.
 
 <img src="docs/images/queue.png" width="400" alt="Perch's link input and queue">
 
@@ -54,11 +54,15 @@ Duplicate links are merged, and a batch with an invalid link is rejected before 
 
 Drag anywhere on the video or the empty parts of its overlay using a mouse or trackpad. A quick click plays or pauses; holding or moving starts a drag. Buttons, sliders and menus keep their normal actions. Drag a window edge or corner to resize it. The player keeps a 16:9 shape and a minimum size of 320 × 180 points. It starts unpinned. Click the pin button to keep it above other apps. It follows desktop Spaces; enable the pin to keep it above other apps, including fullscreen apps.
 
+During a YouTube ad, the site's own controls handle Skip and playback. Click Skip when YouTube makes it available. Drag Perch's title bar to move it during an ad; video-wide dragging and Perch's bottom controls return when the ad ends.
+
 **Option+Space** hides or shows all player windows. It keeps video and audio running, including when auto-next changes videos. The close button pauses playback; with two players open, it closes that player and frees the slot. The last player stays available from the menu bar. **Command+Q** quits and stops playback.
 
 If the global shortcut is already used by another app, Perch reports the conflict rather than replacing that app's shortcut. Use Perch's menu bar icon instead. **Reset position** in that menu recovers a window that is difficult to find.
 
 ## Keyboard controls
+
+<img src="docs/images/player.png" width="640" alt="Close-up of Perch's hover controls playing Big Buck Bunny">
 
 Playback keys apply to the focused player. They do not intercept typing in other apps or in Perch's link field.
 
@@ -118,4 +122,4 @@ YouTube can change its page structure. Public YouTube playback is the main suppo
 
 ## Credits and licence
 
-Perch source is [MIT licensed](LICENSE). The screenshots show *Big Buck Bunny*: (c) copyright 2008, Blender Foundation / [www.bigbuckbunny.org](https://www.bigbuckbunny.org/), [CC BY 3.0](https://peach.blender.org/about/). The film is shown inside the app for demonstration; it is not bundled with Perch. Electron and other dependencies retain their own licences.
+Perch source is [MIT licensed](LICENSE). The screenshots show *Big Buck Bunny*: (c) copyright 2008, Blender Foundation / [www.bigbuckbunny.org](https://www.bigbuckbunny.org/), [CC BY 3.0](https://peach.blender.org/about/). The film is shown inside the app for demonstration; it is not bundled with Perch. The desktop screenshot shows Subway Surfers gameplay; the game and video retain their owners' rights. Electron and other dependencies retain their own licences.

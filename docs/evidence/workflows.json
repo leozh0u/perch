@@ -1,7 +1,11 @@
 {
-  "date": "2026-10-15T04:03:36.867Z",
+  "date": "2026-10-15T04:35:05.760Z",
   "platform": "darwin",
   "results": [
+    {
+      "name": "reopening reuses one instance without a Dock icon",
+      "status": "pass"
+    },
     {
       "name": "reject unsafe and invalid URLs without mutating queue",
       "status": "pass"
@@ -16,6 +20,10 @@
     },
     {
       "name": "buttons, conventional keyboard seeks, volume, speed and scrubber",
+      "status": "pass"
+    },
+    {
+      "name": "YouTube ad controls accept native clicks and keyboard input",
       "status": "pass"
     },
     {

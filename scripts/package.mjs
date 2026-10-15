@@ -13,6 +13,7 @@ const apps = await packager({
   name: 'Perch',
   appBundleId: 'io.github.leozh0u.perch',
   appCategoryType: 'public.app-category.video',
+  extendInfo: { LSUIElement: true },
   platform: 'darwin',
   arch: process.arch,
   out: path.join(root, testPackage ? 'output/test-app' : 'release'),

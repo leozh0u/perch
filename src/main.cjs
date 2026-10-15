@@ -17,9 +17,13 @@ const { parseLinks, addItems, recoverBounds } = require('./core.cjs');
 const { createStore } = require('./store.cjs');
 
 const testing = process.argv.includes('--perch-test');
+const systemUI = !testing || process.argv.includes('--perch-test-shortcuts');
 if (testing && process.env.PERCH_TEST_DATA) app.setPath('userData', process.env.PERCH_TEST_DATA);
 app.setName('Perch');
-if (!testing && !app.requestSingleInstanceLock()) app.quit();
+if (!app.requestSingleInstanceLock()) {
+  app.quit();
+  return;
+}
 
 const players = new Map();
 const securedSessions = new WeakSet();
@@ -460,6 +464,24 @@ function action(name, value, target = active()) {
       broadcast();
       break;
     }
+    case 'reorder': {
+      if (
+        typeof value?.id !== 'string' ||
+        (value.beforeId !== null && typeof value.beforeId !== 'string')
+      )
+        break;
+      const index = store.state.queue.findIndex((item) => item.id === value.id);
+      const before =
+        value.beforeId === null
+          ? store.state.queue.length
+          : store.state.queue.findIndex((item) => item.id === value.beforeId);
+      if (index < 0 || before < 0 || before === index || before === index + 1) break;
+      const [item] = store.state.queue.splice(index, 1);
+      store.state.queue.splice(before - (index < before ? 1 : 0), 0, item);
+      persist();
+      broadcast();
+      break;
+    }
     default:
       if (['toggle', 'pause', 'seek', 'seekTo', 'volume', 'mute', 'rate', 'reveal'].includes(name))
         send(target, name, value);
@@ -566,37 +588,40 @@ ipcMain.on('media-ended', (event, generation) => {
 });
 
 app.whenReady().then(() => {
+  if (process.platform === 'darwin') app.setActivationPolicy('accessory');
   store = createStore(app.getPath('userData'), testing);
   createPlayer();
-  const icon = nativeImage
-    .createFromPath(path.join(__dirname, '../assets/trayTemplate.png'))
-    .resize({ width: 18, height: 18 });
-  icon.setTemplateImage(true);
-  tray = new Tray(icon);
-  tray.setToolTip('Perch');
-  tray.setContextMenu(
-    Menu.buildFromTemplate([
-      { label: 'Show / Hide', accelerator: 'Alt+Space', click: togglePlayers },
-      { label: 'Queue…', click: () => openQueue() },
-      { label: 'Settings…', click: () => openQueue(true) },
-      { label: 'Mute / Unmute', accelerator: 'Alt+M', click: () => action('muteAll') },
-      { type: 'separator' },
-      {
-        label: 'Reset position',
-        click: () => {
-          let offset = 0;
-          for (const session of players.values()) {
-            const bounds = recoverBounds(null, [screen.getPrimaryDisplay()]);
-            session.win.setBounds({ ...bounds, x: bounds.x - offset, y: bounds.y - offset });
-            offset += 40;
-            reveal(session);
-          }
+  if (systemUI) {
+    const icon = nativeImage
+      .createFromPath(path.join(__dirname, '../assets/trayTemplate.png'))
+      .resize({ width: 18, height: 18 });
+    icon.setTemplateImage(true);
+    tray = new Tray(icon);
+    tray.setToolTip('Perch');
+    tray.setContextMenu(
+      Menu.buildFromTemplate([
+        { label: 'Show / Hide', accelerator: 'Alt+Space', click: togglePlayers },
+        { label: 'Queue…', click: () => openQueue() },
+        { label: 'Settings…', click: () => openQueue(true) },
+        { label: 'Mute / Unmute', accelerator: 'Alt+M', click: () => action('muteAll') },
+        { type: 'separator' },
+        {
+          label: 'Reset position',
+          click: () => {
+            let offset = 0;
+            for (const session of players.values()) {
+              const bounds = recoverBounds(null, [screen.getPrimaryDisplay()]);
+              session.win.setBounds({ ...bounds, x: bounds.x - offset, y: bounds.y - offset });
+              offset += 40;
+              reveal(session);
+            }
+          },
         },
-      },
-      { type: 'separator' },
-      { label: 'Quit Perch', click: () => app.quit() },
-    ]),
-  );
+        { type: 'separator' },
+        { label: 'Quit Perch', click: () => app.quit() },
+      ]),
+    );
+  }
   Menu.setApplicationMenu(
     Menu.buildFromTemplate([
       {
@@ -634,7 +659,7 @@ app.whenReady().then(() => {
       },
     ]),
   );
-  if (!testing || process.argv.includes('--perch-test-shortcuts')) {
+  if (systemUI) {
     toggleShortcutAvailable = globalShortcut.register('Alt+Space', togglePlayers);
     muteShortcutAvailable = globalShortcut.register('Alt+M', () => action('muteAll'));
   }

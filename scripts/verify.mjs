@@ -93,13 +93,29 @@ try {
     env: { ...process.env, PERCH_TEST_DATA: userData },
   });
   await application.evaluate(({ app, BrowserWindow }) => {
-    for (const win of BrowserWindow.getAllWindows()) win.webContents.setAudioMuted(true);
-    app.on('browser-window-created', (_event, win) => win.webContents.setAudioMuted(true));
+    const quiet = (win) => {
+      win.setOpacity(0);
+      win.webContents.setAudioMuted(true);
+    };
+    for (const win of BrowserWindow.getAllWindows()) quiet(win);
+    app.on('browser-window-created', (_event, win) => quiet(win));
   });
   const player = await application.firstWindow();
   const errors = [];
   player.on('pageerror', (error) => errors.push(error.message));
   await player.waitForSelector('#links');
+  await check('reopening reuses one instance without a Dock icon', async () => {
+    assert.equal(await application.evaluate(({ app }) => app.hasSingleInstanceLock()), true);
+    if (process.platform === 'darwin')
+      assert.equal(await application.evaluate(({ app }) => app.dock.isVisible()), false);
+    const executable = await application.evaluate(({ app }) => app.getPath('exe'));
+    execFileSync(executable, [root, '--perch-test'], {
+      env: { ...process.env, PERCH_TEST_DATA: userData },
+      timeout: 10000,
+    });
+    assert.equal(application.windows().length, 1, 'A second launch must reuse the existing player');
+    assert.equal(await application.evaluate(({ app }) => app.hasSingleInstanceLock()), true);
+  });
   await check('reject unsafe and invalid URLs without mutating queue', async () => {
     await player.locator('#links').fill('file:///etc/passwd');
     await player.getByRole('button', { name: 'Play', exact: true }).click();
@@ -209,6 +225,74 @@ try {
     await overlay.getByLabel('Video timeline').press('ArrowRight');
     assert.ok((await player.locator('video').evaluate((video) => video.currentTime)) < 22);
   });
+  await check('YouTube ad controls accept native clicks and keyboard input', async () => {
+    const overlay = player.locator('#perch-player');
+    const paused = await player.locator('video').evaluate((video) => video.paused);
+    const url = player.url();
+    await player.evaluate(() => {
+      const video = document.querySelector('video');
+      const site = document.createElement('div');
+      site.id = 'movie_player';
+      site.className = 'ad-showing';
+      site.dataset.skips = '0';
+      video.before(site);
+      site.append(video);
+      const native = document.createElement('div');
+      native.className = 'ytp-chrome-bottom';
+      native.style.cssText = 'position:absolute;bottom:0;left:0;right:0;height:35px';
+      site.append(native);
+      const skip = document.createElement('button');
+      skip.textContent = 'Skip ad';
+      skip.disabled = true;
+      skip.style.cssText = 'position:absolute;bottom:40px;right:12px;width:100px;height:36px';
+      skip.addEventListener('click', (event) => {
+        if (!event.isTrusted) return;
+        site.dataset.skips = String(Number(site.dataset.skips) + 1);
+        site.className = '';
+      });
+      site.append(skip);
+    });
+    const skip = player.getByRole('button', { name: 'Skip ad', exact: true });
+    await skip.waitFor({ state: 'visible' });
+    assert.equal(await skip.isDisabled(), true, 'The site owns the skip countdown');
+    assert.equal(await player.locator('#perch-drag').isVisible(), false);
+    assert.equal(await overlay.getByLabel('Video timeline').isVisible(), false);
+    assert.equal(
+      await overlay.getByRole('button', { name: 'Open queue', exact: true }).isVisible(),
+      true,
+    );
+    assert.equal(
+      await player
+        .locator('.ytp-chrome-bottom')
+        .evaluate((node) => getComputedStyle(node).visibility),
+      'visible',
+    );
+    await player.evaluate(() => document.querySelector('video').dispatchEvent(new Event('ended')));
+    await player.waitForTimeout(200);
+    assert.equal(player.url(), url, 'An ad ending must not advance the video queue');
+    assert.equal(await player.locator('#movie_player').getAttribute('data-skips'), '0');
+    await player.evaluate(() => (document.querySelector('#movie_player button').disabled = false));
+    await skip.click();
+    assert.equal(await player.locator('#movie_player').getAttribute('data-skips'), '1');
+    assert.equal(await player.locator('video').evaluate((video) => video.paused), paused);
+    await player.evaluate(
+      () => (document.querySelector('#movie_player').className = 'ad-interrupting'),
+    );
+    await skip.press('Space');
+    assert.equal(
+      await player.locator('#movie_player').getAttribute('data-skips'),
+      '2',
+      'Space must activate the native Skip button',
+    );
+    assert.equal(await player.locator('video').evaluate((video) => video.paused), paused);
+    assert.equal(await player.locator('#perch-drag').isVisible(), true);
+    assert.equal(await overlay.getByLabel('Video timeline').isVisible(), true);
+    await player.evaluate(() => {
+      const site = document.querySelector('#movie_player');
+      site.before(site.querySelector('video'));
+      site.remove();
+    });
+  });
   await check(
     'queue remains editable while video plays; stable identity through reorder',
     async () => {
@@ -241,6 +325,76 @@ try {
         .getByRole('button', { name: /^Move down:/ })
         .nth(0)
         .click();
+      const documentIdentity = await player.evaluate(
+        () => (window.queueDocumentIdentity = performance.now()),
+      );
+      const rows = queue.locator('.queue-item');
+      await rows.nth(1).dragTo(rows.nth(0), {
+        sourcePosition: { x: 100, y: 20 },
+        targetPosition: { x: 70, y: 3 },
+      });
+      await queue.waitForFunction(
+        async (id) => (await window.perch.getState()).queue[0].id === id,
+        initial.queue[1].id,
+      );
+      const dragged = await queue.evaluate(() => window.perch.getState());
+      assert.equal(
+        dragged.currentId,
+        initial.currentId,
+        'Dragging must not start a different video',
+      );
+      assert.equal(
+        await player.evaluate(() => window.queueDocumentIdentity),
+        documentIdentity,
+        'Dragging must preserve the playing document',
+      );
+      assert.equal(
+        await queue.locator('#links').inputValue(),
+        '',
+        'Queue dragging must not paste an internal ID',
+      );
+      await rows.nth(0).dragTo(queue.locator('#links'), { sourcePosition: { x: 100, y: 20 } });
+      assert.deepEqual(
+        (await queue.evaluate(() => window.perch.getState())).queue.map((item) => item.id),
+        dragged.queue.map((item) => item.id),
+        'Dropping outside the list cancels reorder',
+      );
+      assert.equal(await queue.locator('.dragging').count(), 0);
+      assert.equal(await queue.locator('#links').inputValue(), '');
+      await queue.evaluate(() => window.perch.action('reorder', { id: 'missing', beforeId: null }));
+      assert.deepEqual(
+        (await queue.evaluate(() => window.perch.getState())).queue.map((item) => item.id),
+        dragged.queue.map((item) => item.id),
+      );
+      await queue.emulateMedia({ reducedMotion: 'reduce' });
+      await queue.evaluate(({ id, beforeId }) => window.perch.action('reorder', { id, beforeId }), {
+        id: initial.queue[0].id,
+        beforeId: initial.queue[1].id,
+      });
+      await queue.waitForFunction(
+        (id) => document.querySelector('.queue-item')?.dataset.id === id,
+        initial.queue[0].id,
+      );
+      assert.equal(
+        await queue.evaluate(() =>
+          [...document.querySelectorAll('.queue-item')].some((row) => row.getAnimations().length),
+        ),
+        false,
+        'Reduced motion must avoid spatial reorder animations',
+      );
+      await queue.emulateMedia({ reducedMotion: 'no-preference' });
+      const transfer = await queue.evaluateHandle(() => {
+        const data = new DataTransfer();
+        data.setData('text/uri-list', 'https://example.com/video.mp4');
+        return data;
+      });
+      await queue.locator('#links').dispatchEvent('drop', { dataTransfer: transfer });
+      assert.equal(
+        await queue.locator('#links').inputValue(),
+        'https://example.com/video.mp4',
+        'External link drops must still work',
+      );
+      await queue.locator('#links').fill('');
       await queue.screenshot({ path: path.join(output, 'queue.png') });
       await queue.close();
     },

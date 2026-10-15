@@ -35,9 +35,16 @@ video.perch-video {
   position: absolute !important;
   z-index: auto !important;
 }
-.ytp-chrome-bottom,
 .ytp-chrome-top,
 .ytp-gradient-top,
-.ytp-gradient-bottom {
+#movie_player:not(.ad-showing):not(.ad-interrupting) .ytp-chrome-bottom,
+#movie_player:not(.ad-showing):not(.ad-interrupting) .ytp-gradient-bottom {
   visibility: hidden !important;
+}
+/* Let the site's ad buttons receive real pointer input, including its skip countdown. */
+html:has(#movie_player.ad-showing, #movie_player.ad-interrupting) #perch-drag {
+  display: none !important;
+}
+html:has(#movie_player.ad-showing, #movie_player.ad-interrupting) #perch-player {
+  --perch-bottom-display: none;
 }

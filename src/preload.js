@@ -316,6 +316,9 @@ if (location.href.split('?')[0] === trustedURL) {
         (event) => {
           const target = event.composedPath()[0];
           if (target?.matches?.('input,textarea,select,[contenteditable=true]')) return;
+          // YouTube owns ad interactions; Space must still activate its focused Skip button.
+          if (document.querySelector('#movie_player.ad-showing,#movie_player.ad-interrupting'))
+            return;
           if (event.metaKey || event.ctrlKey || event.altKey) return;
           const key = event.key.toLowerCase();
           const commands = {

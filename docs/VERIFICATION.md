@@ -6,7 +6,7 @@
 
 `npm test`: 6 passing unit groups for YouTube URL forms/timestamps, unsafe schemes/credentials, atomic batch validation and queue limits, disconnected/negative-coordinate display recovery, local-state corruption recovery and duration formatting.
 
-`npm run verify`: 10 passing actual-Electron workflow groups using a generated 40-second H.264/AAC video in an isolated temporary profile. The fixture enforces Trusted Types with no allowed policy, exercising the same DOM-construction constraint encountered on YouTube.
+`npm run verify`: 12 passing actual-Electron workflow groups using a generated 40-second H.264/AAC video in an isolated temporary profile. The fixture enforces Trusted Types with no allowed policy, exercising the same DOM-construction constraint encountered on YouTube.
 
 - Invalid URLs do not change the queue.
 - Batch links produce real video playback. Remote pages have no Node `require` or Perch bridge. A hostile fixture cannot open a popup, download a file or navigate to a local file; the settings callback receives no Electron event.
@@ -67,3 +67,19 @@ Public YouTube was rechecked after branding: more than 35 seconds after seek and
 The [0.1.2 preview](https://github.com/leozh0u/perch/releases/tag/v0.1.2) is public. GitHub's asset digest matches the local ZIP above. [CI 38680001984](https://github.com/leozh0u/perch/actions/runs/38680001984) passed format/build/unit/audit for source commit `7cd3175`. The public README's logo and download/install guide were visually checked in Chrome; the initial animated demo was subsequently replaced with a still at Leo's request.
 
 Screenshot follow-up: Leo preferred a still image. The current README replaces the animation with an inspected frame of the actual app, showing the chair mark and playback controls, plus a drag/resize caption. The earlier animation evidence describes the previous revision; the current public tree uses screenshots. The app and ZIP are unchanged.
+
+## 0.1.3 ad controls and menu bar
+
+Leo reported an unclickable YouTube ad Skip button. A regression fixture reproduced the drag layer covering the site button before the fix. CSS now yields the video surface and bottom controls to the site's native controls while #movie_player has ad-showing/ad-interrupting; the title bar stays available for dragging. The keyboard handler also yields during ads, so a focused native Skip button receives Space. No automatic clicking, skip countdown changes or ad bypass were added.
+
+The actual-Electron regression checks a disabled skip countdown, trusted pointer click, trusted keyboard activation, no pause/queue change, no auto-next from an ad ending, and restoration of normal Perch controls afterwards. Both YouTube ad markers are covered. This fixture is separate from a later live observation: the installed app exposed YouTube's native Skip button, a CUA click cleared the ad, Perch controls returned and the main video advanced to 0:04 / 1:12:58.
+
+A second regression launches the same app/profile again, confirms the second process exits, the first keeps its single-instance lock and only one window remains. Every profile takes that lock; secondary processes return before setting up UI. Runtime accessory activation and the package's LSUIElement flag remove the Dock icon. The optional two-player setting remains separate from app-instance duplication. Automated tests now keep their windows invisible and omit the tray; bounded manual native sessions remain explicitly visible.
+
+Twelve actual-Electron workflow groups and six unit groups passed. An earlier run was interrupted when its visible test window was closed; the invisible rerun completed. The final package and public-site checks are recorded below.
+
+Queue follow-up: real drag-and-drop reorders rows without changing current video or replacing its document. The same workflow checks cancellation outside the list, rejection of a missing ID, empty link input after an internal drag, external URL import, and no spatial reorder animation under reduced motion. The native explicit move buttons remain. The bounded mechanical UI detector reported advisory token/documentation differences, with no blocking finding; the older machine-readable design snapshot is not refreshed as an unrelated task.
+
+Final 0.1.3 check: the explicitly visible public YouTube session passed more than 35 seconds of playback after seeking and global mute/unmute recovery from zero volume. The refreshed player/queue screenshots come from that session; the README hero is Leo's supplied desktop photo. Earlier invisible and visible attempts intermittently reset or timed out. Instrumentation in the passing run recorded six stream DNS failures, one unchanged main video and no unexpected pause; this does not establish the cause of the earlier failures. No speculative playback-selection change was made. These remain a public-site reliability limitation, rather than a claim that every session succeeds.
+
+The final production package passes strict/deep ad-hoc signature verification; LSUIElement is true, version is 0.1.3, and production fuse readback retains disabled Node execution/environment/inspector and enabled ASAR integrity/ASAR-only loading. Installed at `/Applications/Perch.app`; native accessibility inspection confirmed the installed app opens and plays a YouTube video with the expected controls. No isolated test process remains. ZIP SHA-256: `20df0fb85e0593e55f2d0a9a09c999e3b14fe474d42c4340daa713f1b4c2b568`.

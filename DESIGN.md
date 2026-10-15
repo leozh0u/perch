@@ -118,7 +118,7 @@ The palette uses dark neutral surfaces, light text and a red playback accent. Th
 
 ## Layout
 
-A quick video tap plays/pauses. Holding for 180ms or moving at least 5 points starts a drag from any non-control part of the video/overlay; controls keep their own interactions. New installs start unpinned.
+A quick video tap plays/pauses. Holding for 180ms or moving at least 5 points starts a drag from any non-control part of the video/overlay; controls keep their own interactions. New installs start unpinned. Perch lives in the macOS menu bar without a Dock entry; reopening it reuses the running app. During YouTube ads, native site controls remain clickable and the Perch title bar is the drag surface until ordinary video controls return.
 
 The player defaults to 480 × 270px and keeps a 16:9 aspect ratio, with a minimum size of 320 × 180px. The queue is a separate 400 × 520px window with a minimum size of 360 × 360px. These are window dimensions, not web page breakpoints.
 
@@ -148,7 +148,7 @@ The multiline paste field shares its container with Play. It has a transparent t
 
 ### Queue rows
 
-Each row groups its index or active play icon, title, source and explicit move/remove controls. Hover adds a faint white background; the current row uses the current-item token. The row's play action stays visually separate from its smaller edit controls.
+Each row groups its index or active play icon, title, source and explicit move/remove controls. Hover adds a faint white background; the current row uses the current-item token. The row's play action stays visually separate from its smaller edit controls. A small six-dot grip and grab cursor expose dragging; a thin red insertion line marks the destination. Rows keep their DOM identity through live updates and move into their new positions with a bounded 180ms ease-out transform. Move up/down remain available for keyboard users. Buttons use 100ms press feedback. Reduced motion removes spatial movement, including button scaling.
 
 ### Player controls
 
