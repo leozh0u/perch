@@ -36,7 +36,9 @@ Perch lives in the menu bar and does not take a Dock slot. Click its menu bar ic
 
 ## Why I built it
 
-I wanted the little video window from my phone on my Mac, with familiar keyboard controls and a queue of things to watch. Safari and Chrome already have picture-in-picture. Perch puts this workflow in a separate Mac app, so I can close the browser tab and keep watching.
+The idea came from practising on Zetamac while listening to a video. I wanted to watch it in my peripheral vision too, so I built a small player I could keep beside my work.
+
+Safari and Chrome already have picture-in-picture. I wanted a separate Mac app with familiar keyboard controls and a queue, so I could close the browser tab and keep watching.
 
 The player has a timeline, volume and speed controls that appear on hover. It also has an optional second player, disabled by default.
 

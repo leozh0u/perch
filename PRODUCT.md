@@ -29,3 +29,5 @@ Follow-up: a quick tap on the video plays/pauses; hold or drag any non-control v
 14 October branding: use a play button perched on a chair. Keep the menu bar icon at 18 points; use the matching mark in the app, README and download.
 
 14 October queue/menu refinement: run in the menu bar without a Dock entry; reopening reuses the existing app. Drag queue rows with an insertion marker and brief reorder/press feedback, while keeping explicit move buttons and reduced-motion support. Yield native YouTube ad controls while ads play. Use Leo's supplied desktop screenshot as the README hero.
+
+14 October motivation, supplied by Leo: he was practising on Zetamac while listening to a video and wanted to watch it in his peripheral vision too. Use this explanation in the README; keep public explanations concise, humanised and semiformal.
