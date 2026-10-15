@@ -22,6 +22,12 @@ try {
     args: ['--perch-test', '--perch-test-shortcuts'],
     env: { ...process.env, PERCH_TEST_DATA: directory },
   });
+  await application.evaluate(({ BrowserWindow }) => {
+    globalThis.perchNativeEvents = [];
+    const win = BrowserWindow.getAllWindows()[0];
+    for (const name of ['show', 'hide', 'focus', 'blur'])
+      win.on(name, () => globalThis.perchNativeEvents.push({ name, at: Date.now() }));
+  });
   const page = await application.firstWindow();
   await page.waitForSelector('#links');
   await page.locator('#links').fill(`${fixture.base}/first\n${fixture.base}/second`);
@@ -44,6 +50,8 @@ try {
         alwaysOnTop: win.isAlwaysOnTop(),
         allSpaces: win.isVisibleOnAllWorkspaces(),
         optionSpaceRegistered: globalShortcut.isRegistered('Alt+Space'),
+        focused: win.isFocused(),
+        events: globalThis.perchNativeEvents.slice(-12),
         display: screen.getPrimaryDisplay().workArea,
       };
     });
@@ -54,6 +62,7 @@ try {
         paused: video?.paused,
         muted: video?.muted,
         volume: video?.volume,
+        documentVisibility: document.visibilityState,
       };
     });
     const sample = { at: new Date().toISOString(), ...window, ...video };

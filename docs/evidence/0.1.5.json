@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-15",
+  "version": "0.1.5",
+  "platform": "Apple Silicon, macOS 26.6.2",
+  "fullscreen": {
+    "method": "Leo physical confirmation, installed app; same window code as final chapter build",
+    "notchAppleRunning": true,
+    "optionSpaceHideRevealInFullscreen": true,
+    "audioContinues": true,
+    "singleNormalInstance": true
+  },
+  "chapters": {
+    "source": "Public NeetCode Dynamic Programming 1D video, loaded YouTube DOM",
+    "chapterCount": 13,
+    "selectionAssignedTime": 65,
+    "pausePreserved": true,
+    "decodedFrameAfterSeek": "Not certified: second public check timed out waiting for readyState >= 2",
+    "fixtureSeekPauseRateAndMalformedInput": "pass",
+    "uiWidths": [
+      320,
+      480
+    ]
+  },
+  "review": "Independent static diff review: no blocking findings; not a penetration test"
+}

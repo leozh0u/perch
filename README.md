@@ -4,7 +4,7 @@
 
 A free floating video player for macOS. Paste a YouTube link, put it beside your work, and keep watching as you switch apps.
 
-**[Download for Apple Silicon](https://github.com/leozh0u/perch/releases/download/v0.1.4/Perch-mac-arm64.zip)** · [All releases](https://github.com/leozh0u/perch/releases) · [Report a bug](https://github.com/leozh0u/perch/issues/new/choose)
+**[Download for Apple Silicon](https://github.com/leozh0u/perch/releases/download/v0.1.5/Perch-mac-arm64.zip)** · [All releases](https://github.com/leozh0u/perch/releases) · [Report a bug](https://github.com/leozh0u/perch/issues/new/choose)
 
 macOS 13 or later, M1 or newer. Free and open source under the [MIT licence](LICENSE). No account, subscription or API key required by Perch.
 
@@ -14,7 +14,7 @@ Perch floating over VS Code on my Mac. Hold or drag the video to move it; drag a
 
 ## Install
 
-1. **[Download Perch-mac-arm64.zip](https://github.com/leozh0u/perch/releases/download/v0.1.4/Perch-mac-arm64.zip).** You do not need to download the source-code ZIP.
+1. **[Download Perch-mac-arm64.zip](https://github.com/leozh0u/perch/releases/download/v0.1.5/Perch-mac-arm64.zip).** You do not need to download the source-code ZIP.
 2. In Finder, open **Downloads** and double-click the ZIP to unzip it. Safari may already have unzipped it.
 3. Drag **Perch.app** into **Applications**.
 4. Open **Applications**, then double-click **Perch**.
@@ -58,13 +58,15 @@ Drag anywhere on the video or the empty parts of its overlay using a mouse or tr
 
 During a YouTube ad, the site's own controls handle Skip and playback. Click Skip when YouTube makes it available. Drag Perch's title bar to move it during an ad; video-wide dragging and Perch's bottom controls return when the ad ends.
 
-**Option+Space** hides or shows all player windows. It keeps video and audio running, including when auto-next changes videos. The close button pauses playback; with two players open, it closes that player and frees the slot. The last player stays available from the menu bar. **Command+Q** quits and stops playback.
+**Option+Space** hides or shows all player windows. It can bring a covered player back into view without changing your pin setting or taking keyboard focus. It keeps video and audio running, including when auto-next changes videos. The close button pauses playback; with two players open, it closes that player and frees the slot. The last player stays available from the menu bar. **Command+Q** quits and stops playback.
 
 If the global shortcut is already used by another app, Perch reports the conflict rather than replacing that app's shortcut. Use Perch's menu bar icon instead. **Reset position** in that menu recovers a window that is difficult to find.
 
 ## Keyboard controls
 
 <img src="docs/images/player.png" width="640" alt="Close-up of Perch's hover controls playing Big Buck Bunny">
+
+**Chapters:** when YouTube provides them, a small chapter menu appears above the timeline. Choose a timestamp and title to jump there; short separators mark chapter boundaries. Videos without chapters keep the ordinary timeline. The replay-popularity graph is not included.
 
 **Captions:** click **CC** in the top controls, or press **C** while the player is focused. A red line under CC means captions are on. The button is disabled when none are available. YouTube uses its own captions and selected language; standard HTML videos use their caption or subtitle tracks. Availability depends on the video.
 

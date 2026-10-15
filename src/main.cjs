@@ -84,8 +84,14 @@ function broadcast() {
     queueWindow.webContents.send('perch-state', snapshot());
 }
 function floating(win) {
-  win.setAlwaysOnTop(store.state.pinned, 'floating');
-  win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  win.setVisibleOnAllWorkspaces(true, {
+    visibleOnFullScreen: true,
+    skipTransformProcessType: process.platform === 'darwin',
+  });
+  win.setAlwaysOnTop(
+    store.state.pinned,
+    process.platform === 'darwin' ? 'screen-saver' : 'floating',
+  );
 }
 function send(session, command, value) {
   if (session && !session.win.isDestroyed())
@@ -96,13 +102,14 @@ function reveal(session) {
   session.win.setBounds(recoverBounds(session.win.getBounds(), screen.getAllDisplays()));
   floating(session.win);
   session.win.showInactive();
+  session.win.moveTop();
 }
 function showPlayers() {
   if (!players.size) createPlayer();
   for (const session of players.values()) reveal(session);
 }
 function togglePlayers() {
-  if ([...players.values()].some((session) => session.win.isVisible()))
+  if ([...players.values()].some((session) => session.shown && session.visibility !== 'hidden'))
     for (const session of players.values()) session.win.hide();
   else showPlayers();
 }
@@ -179,7 +186,15 @@ function createPlayer(home = true) {
     number:
       [1, 2].find((number) => ![...players.values()].some((entry) => entry.number === number)) || 1,
     media: {},
+    shown: false,
+    visibility: 'visible',
   };
+  win.on('show', () => {
+    session.shown = true;
+  });
+  win.on('hide', () => {
+    session.shown = false;
+  });
   players.set(contentsId, session);
   lastActive = contentsId;
   win.setAspectRatio(16 / 9);
@@ -446,7 +461,7 @@ function action(name, value, target = active()) {
             ...store.state.queue.slice(0, index),
           ].find((item) => !occupied.has(item.id));
           if (replacement)
-            playItem(replacement.id, { target: session, revealWindow: session.win.isVisible() });
+            playItem(replacement.id, { target: session, revealWindow: session.shown });
           else if (players.size > 1) session.win.destroy();
           else action('home', undefined, session);
         }
@@ -533,6 +548,10 @@ ipcMain.on('player-action', (event, name, value) => {
     lastActive = event.sender.id;
     action(name, value, session);
   }
+});
+ipcMain.on('player-visibility', (event, visibility) => {
+  const session = sessionFor(event);
+  if (session && ['visible', 'hidden'].includes(visibility)) session.visibility = visibility;
 });
 ipcMain.on('media-ready', (event) => {
   const session = sessionFor(event);

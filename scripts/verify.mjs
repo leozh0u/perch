@@ -95,6 +95,8 @@ try {
   await application.evaluate(({ app, BrowserWindow }) => {
     const quiet = (win) => {
       win.setOpacity(0);
+      // Invisible/silent fixtures must not wait for macOS background timer budgets.
+      win.webContents.setBackgroundThrottling(false);
       win.webContents.setAudioMuted(true);
     };
     for (const win of BrowserWindow.getAllWindows()) quiet(win);
@@ -418,6 +420,78 @@ try {
     },
   );
   await check(
+    'chapters arrive late, seek without pausing, and ignore unsafe or unrelated markup',
+    async () => {
+      const picker = player.getByRole('combobox', { name: 'Video chapters', exact: true });
+      assert.equal(await picker.isVisible(), false);
+      await player.evaluate(() => {
+        const video = document.querySelector('video');
+        video.pause();
+        video.playbackRate = 1.25;
+        const fixture = document.createElement('div');
+        fixture.id = 'chapter-fixture';
+        for (const [stamp, title, href] of [
+          ['0:00', 'Intro'],
+          ['0:12', 'Second chapter'],
+          ['0:25', '<img src=x onerror=alert(1)>'],
+          ['0:12', 'Duplicate'],
+          ['0:99', 'Invalid'],
+          ['9:00', 'Beyond duration'],
+          ['0:03', 'Other video', '?v=other'],
+          ['0:04', 'Bad URL', 'http://[invalid'],
+        ]) {
+          const item = document.createElement('ytd-macro-markers-list-item-renderer');
+          const link = document.createElement('a');
+          link.href = href || location.href;
+          const heading = document.createElement('h3');
+          heading.textContent = title;
+          const time = document.createElement('div');
+          time.id = 'time';
+          time.textContent = stamp;
+          item.append(link, heading, time);
+          fixture.append(item);
+        }
+        const site = document.createElement('div');
+        site.id = 'movie_player';
+        fixture.append(site);
+        document.body.append(fixture);
+      });
+      await picker.waitFor();
+      assert.equal(await picker.locator('option').count(), 3);
+      assert.equal(await picker.locator('img').count(), 0, 'Chapter titles must remain plain text');
+      await picker.selectOption('12');
+      await player.waitForFunction(
+        () => Math.abs(document.querySelector('video').currentTime - 12) < 1,
+      );
+      assert.equal(await player.locator('video').evaluate((v) => v.paused), true);
+      assert.equal(await player.locator('video').evaluate((v) => v.playbackRate), 1.25);
+      assert.equal(await player.locator('#perch-player').locator('.chapter-marks span').count(), 2);
+      await player.locator('#perch-drag').focus();
+      await player.screenshot({ path: path.join(output, 'chapters.png') });
+      await application.evaluate(({ BrowserWindow }) =>
+        BrowserWindow.getAllWindows()[0].setSize(320, 180),
+      );
+      assert.equal(
+        await picker.evaluate((n) => n.getBoundingClientRect().right <= innerWidth),
+        true,
+      );
+      await player.screenshot({ path: path.join(output, 'chapters-small.png') });
+      await application.evaluate(({ BrowserWindow }) =>
+        BrowserWindow.getAllWindows()[0].setSize(480, 270),
+      );
+      await player.evaluate(() =>
+        document.querySelector('#movie_player').classList.add('ad-showing'),
+      );
+      await picker.waitFor({ state: 'hidden' });
+      await player.evaluate(() => document.querySelector('#chapter-fixture').remove());
+      await player.locator('#perch-player').getByLabel('Playback speed').selectOption('1');
+      await player
+        .locator('#perch-player')
+        .getByRole('button', { name: 'Play', exact: true })
+        .click();
+    },
+  );
+  await check(
     'queue remains editable while video plays; stable identity through reorder',
     async () => {
       const queuePromise = application.waitForEvent('window');
@@ -555,6 +629,33 @@ try {
     );
   });
   await check('native panel flags, resize and pin toggle', async () => {
+    const reveal = await application.evaluate(({ app, BrowserWindow }) => {
+      const win = BrowserWindow.getAllWindows()[0];
+      const calls = [];
+      const spaces = win.setVisibleOnAllWorkspaces.bind(win);
+      const raise = win.moveTop.bind(win);
+      win.setVisibleOnAllWorkspaces = (...args) => {
+        calls.push(args);
+        return spaces(...args);
+      };
+      win.moveTop = () => {
+        calls.push('raised');
+        return raise();
+      };
+      app.emit('activate');
+      win.setVisibleOnAllWorkspaces = spaces;
+      win.moveTop = raise;
+      return { calls, pinned: win.isAlwaysOnTop() };
+    });
+    assert.equal(reveal.pinned, false, 'Explicit reveal must preserve the unpinned preference');
+    assert.ok(reveal.calls.includes('raised'), 'Revealing must raise the native window');
+    assert.deepEqual(reveal.calls.find(Array.isArray), [
+      true,
+      {
+        visibleOnFullScreen: true,
+        skipTransformProcessType: process.platform === 'darwin',
+      },
+    ]);
     const settings = await application.evaluate(({ BrowserWindow }) => {
       const win = BrowserWindow.getAllWindows()[0];
       return {

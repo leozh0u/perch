@@ -158,6 +158,8 @@ The top and bottom overlays fade with `opacity .18s ease-out` after 2.3 seconds 
 
 Captions use a labelled CC toggle in the top row. A red underline and aria-pressed state identify enabled captions. The button stays in place but is disabled when unavailable or during YouTube ads; C toggles it in the focused player. No language picker is added. While controls are visible, YouTube captions clear the bottom row by 52 points; they return to the source position when controls fade.
 
+YouTube chapters appear in a native select above the timeline, with timestamp and title, when the source provides them. Small dark separators mark their positions. No extra row appears without chapters. The selector uses the existing 12px controls typography and dark surface; caption clearance increases to 76 points while this row is visible. Native keyboard selection and pointer actions remain separate from playback speed and dragging.
+
 ### Status and recovery
 
 Loading or error text appears in a centred translucent badge. Errors expose Retry, Queue and Open in browser. Shell status text uses the muted colour, changing to error pink when flagged. Short playback notices appear below the top controls.

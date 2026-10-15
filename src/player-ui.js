@@ -49,7 +49,13 @@ export function createPlayerUI(onAction) {
   make('div', 'badge', panel, { role: 'status' });
   make('div', 'notice', panel, { role: 'status' });
   const bottom = make('div', 'bottom', panel);
-  make('input', 'timeline', bottom, {
+  const chapterPicker = make('select', 'chapters', bottom, {
+    'aria-label': 'Video chapters',
+    title: 'Jump to chapter',
+    hidden: '',
+  });
+  const timelineWrap = make('div', 'timeline-wrap', bottom);
+  make('input', 'timeline', timelineWrap, {
     'aria-label': 'Video timeline',
     type: 'range',
     min: '0',
@@ -58,6 +64,7 @@ export function createPlayerUI(onAction) {
     value: '0',
     disabled: '',
   });
+  const chapterMarks = make('div', 'chapter-marks', timelineWrap, { 'aria-hidden': 'true' });
   const row = make('div', 'row', bottom);
   button(row, 'previous', 'Previous video', 'previous', 'Previous video (⌘⇧←)');
   button(row, 'toggle', 'Play', 'play', 'Play / Pause (Space, K)');
@@ -224,12 +231,39 @@ export function createPlayerUI(onAction) {
   root
     .querySelector('.volume-range')
     .addEventListener('input', (event) => onAction('volume', Number(event.target.value)));
-  root
-    .querySelector('select')
-    .addEventListener('change', (event) => onAction('rate', Number(event.target.value)));
+  rate.addEventListener('change', (event) => onAction('rate', Number(event.target.value)));
+  chapterPicker.addEventListener('change', () => {
+    onAction('seekTo', Number(chapterPicker.value));
+    reveal();
+  });
   let badgeSignature;
+  let chapterSignature;
   function update(state) {
     const video = state.video;
+    const chapters = state.chapters || [];
+    const signatureChapters = JSON.stringify([
+      chapters,
+      Number.isFinite(video?.duration) ? video.duration : 0,
+    ]);
+    if (signatureChapters !== chapterSignature) {
+      chapterSignature = signatureChapters;
+      chapterPicker.replaceChildren();
+      chapterMarks.replaceChildren();
+      for (const chapter of chapters) {
+        const option = make('option', '', chapterPicker, { value: String(chapter.start) });
+        option.textContent = `${time(chapter.start)}  ${chapter.title}`;
+        if (chapter.start > 0 && video?.duration > 0) {
+          const mark = make('span', '', chapterMarks);
+          mark.style.left = `${(chapter.start / video.duration) * 100}%`;
+        }
+      }
+    }
+    chapterPicker.hidden = !chapters.length;
+    host.toggleAttribute('data-chapters', Boolean(chapters.length));
+    if (video && root.activeElement !== chapterPicker) {
+      const current = chapters.findLast((chapter) => chapter.start <= video.currentTime);
+      chapterPicker.value = String((current || chapters[0])?.start ?? '');
+    }
     root.querySelector('.title').textContent = state.title || 'Perch';
     captions.disabled = !state.captions?.available;
     captions.setAttribute(
@@ -305,7 +339,7 @@ export function createPlayerUI(onAction) {
           `${time(video.currentTime)} / ${video.duration === Infinity ? 'LIVE' : Number.isFinite(video.duration) && video.duration > 0 ? time(video.duration) : '--:--'}`;
       }
       root.querySelector('.volume-range').value = video.muted ? 0 : video.volume;
-      root.querySelector('select').value = String(video.playbackRate);
+      rate.value = String(video.playbackRate);
       const mute = root.querySelector('[data-action=mute]');
       mute.replaceChildren(iconNode(video.muted || video.volume === 0 ? 'mute' : 'volume'));
       mute.setAttribute('aria-label', video.muted || video.volume === 0 ? 'Unmute' : 'Mute');

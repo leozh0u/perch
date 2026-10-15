@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-15T05:36:39.922Z",
+  "date": "2026-10-15T06:52:17.340Z",
   "platform": "darwin",
   "results": [
     {
@@ -28,6 +28,10 @@
     },
     {
       "name": "captions toggle native text tracks and YouTube controls without pausing",
+      "status": "pass"
+    },
+    {
+      "name": "chapters arrive late, seek without pausing, and ignore unsafe or unrelated markup",
       "status": "pass"
     },
     {

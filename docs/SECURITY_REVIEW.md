@@ -52,3 +52,9 @@ The cleanup kept the existing window/session model rather than adding layers. CS
 - No dedicated subframe-IPC exploit test, binary penetration test, Chromium exploit research or independent supply-chain audit was performed. Intel Macs, other macOS releases, DRM/login flows and long-term battery use were not verified.
 
 Sources used: [Electron security guidance](https://www.electronjs.org/docs/latest/tutorial/security), [Electron fuses](https://www.electronjs.org/docs/latest/tutorial/fuses), [Apple app-opening guidance](https://support.apple.com/en-us/102445), current repository source, packaged fuse readback and recorded test outputs. Native results from earlier builds remain labelled by build in [VERIFICATION.md](VERIFICATION.md).
+
+## 0.1.5 focused review — 15 October 2026
+
+Ponytail and security-best-practices guidance were applied to the fullscreen/chapter diff; an independent static diff review found no blocking findings. Visibility IPC accepts only visible/hidden from the owning player’s main frame and exposes no remote bridge. Chapters are read from the loaded page, bounded to 600 candidate elements/200 entries, filtered to the current video, deduplicated and checked against duration. Titles use textContent; links are never followed. Malformed URLs and unrelated/invalid chapters are rejected. Chapter selection uses the existing clamped seek action, preserving pause/rate. No new dependency, OS permission, backend or network API was added.
+
+The Electron fixture covers hostile chapter text, malformed links, duplicates, late availability, ad states and selector separation. This is a focused review of changed code, not a fresh penetration test or dependency-source audit. Earlier distribution/runtime limits still apply.

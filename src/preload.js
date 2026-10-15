@@ -2,6 +2,11 @@ import mediaStyles from './media.css';
 import { contextBridge, ipcRenderer } from 'electron';
 import { createPlayerUI } from './player-ui.js';
 
+// Main-frame sender validation keeps this state local to its own player.
+const publishVisibility = () => ipcRenderer.send('player-visibility', document.visibilityState);
+document.addEventListener('visibilitychange', publishVisibility);
+window.addEventListener('DOMContentLoaded', publishVisibility, { once: true });
+
 const trustedURL = process.argv
   .find((arg) => arg.startsWith('--perch-home='))
   ?.slice('--perch-home='.length);
@@ -40,6 +45,34 @@ if (location.href.split('?')[0] === trustedURL) {
   let videoEvents,
     lastProgress = Date.now();
   let captionTrack;
+  function chapters() {
+    if (
+      !video ||
+      !Number.isFinite(video.duration) ||
+      !video.seekable.length ||
+      document.querySelector('#movie_player.ad-showing,#movie_player.ad-interrupting')
+    )
+      return [];
+    const found = new Map();
+    const currentId = new URL(location.href).searchParams.get('v');
+    for (const node of [...document.querySelectorAll('ytd-macro-markers-list-item-renderer')].slice(
+      0,
+      600,
+    )) {
+      const href = node.querySelector('a[href]')?.getAttribute('href');
+      try {
+        if (!href || new URL(href, location.href).searchParams.get('v') !== currentId) continue;
+      } catch {
+        continue;
+      }
+      const stamp = node.querySelector('#time')?.textContent.trim();
+      if (!/^\d+(?::[0-5]\d){1,2}$/.test(stamp || '')) continue;
+      const start = stamp.split(':').reduce((value, part) => value * 60 + Number(part), 0);
+      const title = node.querySelector('h3')?.textContent.trim().slice(0, 160);
+      if (title && start < video.duration && !found.has(start)) found.set(start, { start, title });
+    }
+    return [...found.values()].sort((a, b) => a.start - b.start).slice(0, 200);
+  }
   function captions() {
     if (!video || document.querySelector('#movie_player.ad-showing,#movie_player.ad-interrupting'))
       return { available: false, enabled: false };
@@ -179,6 +212,7 @@ if (location.href.split('?')[0] === trustedURL) {
       multiplePlayers: state.players?.length > 1,
       queueCount: state.queue?.length,
       captions: captions(),
+      chapters: chapters(),
       hasPrevious: index > 0 && state.queue.slice(0, index).some(available),
       hasNext: index >= 0 && state.queue.slice(index + 1).some(available),
     });

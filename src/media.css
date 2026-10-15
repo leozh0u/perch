@@ -41,6 +41,11 @@ html:has(#perch-player[data-controls-visible])
   .ytp-caption-window-container {
   height: calc(100% - 52px) !important;
 }
+html:has(#perch-player[data-controls-visible][data-chapters])
+  #movie_player:not(.ad-showing):not(.ad-interrupting)
+  .ytp-caption-window-container {
+  height: calc(100% - 76px) !important;
+}
 .ytp-chrome-top,
 .ytp-gradient-top,
 #movie_player:not(.ad-showing):not(.ad-interrupting) .ytp-chrome-bottom,

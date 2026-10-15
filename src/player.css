@@ -144,6 +144,21 @@ button svg {
   cursor: pointer;
   accent-color: var(--accent);
 }
+.timeline-wrap {
+  position: relative;
+}
+.chapter-marks {
+  position: absolute;
+  inset: 0 5px;
+  pointer-events: none;
+}
+.chapter-marks span {
+  position: absolute;
+  top: 6px;
+  height: 3px;
+  width: 3px;
+  background: #121212;
+}
 input[type='range'] {
   accent-color: var(--accent);
   padding: 0;
@@ -182,6 +197,16 @@ select {
 .volume {
   display: flex;
   align-items: center;
+}
+.chapters {
+  appearance: auto;
+  width: auto;
+  max-width: 100%;
+  height: 24px;
+  padding: 2px 6px;
+  text-align: left;
+  background: #181818e8;
+  text-overflow: ellipsis;
 }
 .volume input {
   width: 0;
