@@ -58,25 +58,47 @@ export function createPlayerUI(onAction) {
   for (const value of [.5, .75, 1, 1.25, 1.5, 1.75, 2]) { const option = make('option', '', rate, { value: String(value) }); option.textContent = `${value}×`; }
   rate.value = '1';
   document.documentElement.append(host);
-  // Native draggable regions must be in the document's light DOM. Keep this
-  // strip clear of the four buttons on the right, including at minimum size.
+  // A transparent surface catches video gestures above the site's own controls.
+  // Our buttons/sliders remain above it and keep their native interactions.
   const dragHandle = document.createElement('div');
-  dragHandle.id = 'perch-drag';
-  dragHandle.style.cssText = 'position:fixed;top:0;left:0;right:156px;height:36px;z-index:2147483647;-webkit-app-region:no-drag;touch-action:none;';
-  dragHandle.setAttribute('aria-hidden', 'true');
+  dragHandle.id = 'perch-drag'; dragHandle.tabIndex = -1;
+  dragHandle.setAttribute('role', 'group'); dragHandle.setAttribute('aria-label', 'Video surface');
+  dragHandle.style.cssText = 'position:fixed;inset:0;z-index:2147483646;touch-action:none;user-select:none;outline:none;';
   document.documentElement.append(dragHandle);
-  let dragging = false;
-  dragHandle.addEventListener('pointerdown', event => {
-    if (event.button !== 0 || !event.isTrusted) return;
-    event.preventDefault();
-    dragging = true; dragHandle.setPointerCapture(event.pointerId);
-    onAction('drag', { phase: 'start', x: event.screenX, y: event.screenY });
-  });
-  document.addEventListener('pointermove', event => {
-    if (dragging && event.isTrusted) onAction('drag', { phase: 'move', x: event.screenX, y: event.screenY });
+  host.style.userSelect = 'none';
+  let gesture, holdTimer;
+  const isControl = event => event.composedPath().some(node => node?.matches?.('button,input,select,a,[contenteditable=true]'));
+  const isSurface = event => event.composedPath().includes(dragHandle) || event.composedPath().includes(host);
+  const startDrag = () => {
+    if (!gesture || gesture.dragging) return;
+    gesture.dragging = true; clearTimeout(holdTimer);
+    dragHandle.style.cursor = 'grabbing';
+    onAction('drag', { phase: 'start', x: gesture.x, y: gesture.y });
+  };
+  document.addEventListener('pointerdown', event => {
+    if (event.button !== 0 || !event.isTrusted || !isSurface(event) || isControl(event)) return;
+    event.preventDefault(); event.stopImmediatePropagation();
+    reveal();
+    gesture = { id: event.pointerId, x: event.screenX, y: event.screenY, dragging: false };
+    dragHandle.focus({ preventScroll: true }); dragHandle.setPointerCapture(event.pointerId);
+    holdTimer = setTimeout(startDrag, 180);
   }, true);
-  const stopDrag = () => { if (dragging) { dragging = false; onAction('drag', { phase: 'end' }); } };
-  document.addEventListener('pointerup', stopDrag, true); document.addEventListener('pointercancel', stopDrag, true); window.addEventListener('blur', stopDrag);
+  document.addEventListener('pointermove', event => {
+    if (!gesture || event.pointerId !== gesture.id || !event.isTrusted) return;
+    if (Math.hypot(event.screenX - gesture.x, event.screenY - gesture.y) >= 5) startDrag();
+    if (gesture.dragging) onAction('drag', { phase: 'move', x: event.screenX, y: event.screenY });
+  }, true);
+  const stopGesture = tap => {
+    if (!gesture) return;
+    const previous = gesture; gesture = null; clearTimeout(holdTimer); dragHandle.style.cursor = '';
+    if (dragHandle.hasPointerCapture(previous.id)) dragHandle.releasePointerCapture(previous.id);
+    if (previous.dragging) onAction('drag', { phase: 'end' });
+    else if (tap) onAction('toggle');
+  };
+  document.addEventListener('pointerup', event => { if (gesture && event.pointerId === gesture.id) { event.preventDefault(); event.stopImmediatePropagation(); stopGesture(true); } }, true);
+  document.addEventListener('pointercancel', () => stopGesture(false), true);
+  window.addEventListener('blur', () => stopGesture(false));
+  document.addEventListener('click', event => { if (isSurface(event) && !isControl(event)) { event.preventDefault(); event.stopImmediatePropagation(); } }, true);
   let hideTimer, toastTimer, scrubbing = false, hoveringControls = false;
   const chrome = root.querySelector('.chrome');
   const timeline = root.querySelector('.timeline');
@@ -121,7 +143,7 @@ export function createPlayerUI(onAction) {
       if (state.error || video?.error) {
         const actions = document.createElement('div'); actions.className = 'error-actions';
         for (const [label, action] of [['Retry', 'retry'], ['Queue', 'queue'], ['Open in browser', 'external']]) {
-          const button = document.createElement('button'); button.textContent = label; button.addEventListener('click', () => onAction(action)); actions.append(button);
+          const button = document.createElement('button'); button.textContent = label; button.addEventListener('click', event => { if (event.isTrusted) onAction(action); }); actions.append(button);
         }
         badge.append(actions);
       }
@@ -138,7 +160,7 @@ export function createPlayerUI(onAction) {
       if (!scrubbing) { timeline.max = seekable ? video.duration : 100; timeline.value = seekable ? video.currentTime : 0; root.querySelector('.time').textContent = `${time(video.currentTime)} / ${video.duration === Infinity ? 'LIVE' : Number.isFinite(video.duration) && video.duration > 0 ? time(video.duration) : '--:--'}`; }
       root.querySelector('.volume-range').value = video.muted ? 0 : video.volume;
       root.querySelector('select').value = String(video.playbackRate);
-      const mute = root.querySelector('[data-action=mute]'); mute.replaceChildren(iconNode(video.muted || video.volume === 0 ? 'mute' : 'volume')); mute.setAttribute('aria-label', video.muted ? 'Unmute' : 'Mute');
+      const mute = root.querySelector('[data-action=mute]'); mute.replaceChildren(iconNode(video.muted || video.volume === 0 ? 'mute' : 'volume')); mute.setAttribute('aria-label', video.muted || video.volume === 0 ? 'Unmute' : 'Mute');
     }
   }
   reveal();

@@ -43,6 +43,18 @@ try {
     const queuePromise = application.waitForEvent('window');
     await page.locator('#perch-player').getByRole('button', { name: 'Open queue', exact: true }).click();
     const queue = await queuePromise; await queue.waitForSelector('#links');
+    await page.locator('#perch-player').getByLabel('Volume', { exact: true }).focus();
+    await page.locator('#perch-player').getByLabel('Volume', { exact: true }).fill('0');
+    await queue.evaluate(() => window.perch.action('muteAll'));
+    await page.waitForFunction(() => { const v = document.querySelector('video'); return v && !v.muted && v.volume > 0 && !v.paused; });
+    await queue.evaluate(() => window.perch.action('muteAll'));
+    await page.waitForFunction(() => document.querySelector('video')?.muted === true);
+    await queue.evaluate(() => window.perch.action('muteAll'));
+    await page.waitForFunction(() => { const v = document.querySelector('video'); return v && !v.muted && v.volume > 0 && !v.paused; });
+    await page.waitForTimeout(3000);
+    const audible = await page.locator('video').evaluate(v => !v.muted && v.volume > 0 && !v.paused);
+    if (!audible) throw new Error('YouTube did not retain audible playback after global unmute');
+    await fs.writeFile(path.join(output, 'youtube-result.json'), JSON.stringify({ played: true, longPlaybackConfirmed: true, zeroVolumeRecovery: true, ...evidence, checkedAt: new Date().toISOString() }, null, 2));
     await queue.locator('#links').fill('https://www.youtube.com/watch?v=Z4E6ZT-M2gA'); await queue.getByRole('button', { name: 'Add to queue', exact: true }).click();
     await queue.waitForFunction(() => !document.querySelectorAll('.item-title')[1]?.textContent.startsWith('YouTube ·'), { timeout: 8000 }).catch(() => {});
     await queue.screenshot({ path: path.join(output, 'youtube-queue.png') });

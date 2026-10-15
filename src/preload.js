@@ -12,13 +12,21 @@ if (location.href.split('?')[0] === trustedURL) {
   });
 } else {
   let video = null, ui, init = null, state = {}, timer, missingTimer, generation = -1, error = null, restored = false, positionRestored = false;
-  let desiredVolume = 1, desiredRate = 1, desiredMuted = false;
+  let desiredVolume = 1, desiredRate = 1, desiredMuted = false, audibleVolume = 1;
   let requestedPause = false;
   let videoEvents, lastProgress = Date.now();
   const action = (name, value) => {
     if (['queue', 'hide', 'pin', 'external', 'next', 'previous', 'retry', 'size', 'drag'].includes(name)) { ipcRenderer.send('player-action', name, value); return; }
     if (name === 'pause') { requestedPause = true; video?.pause(); publish(); return; }
-    if (name === 'setMuted') { desiredMuted = Boolean(value); if (video) video.muted = desiredMuted; publish(); return; }
+    if (name === 'setMuted') {
+      desiredMuted = Boolean(value);
+      if (video) {
+        if (video.volume > 0) audibleVolume = video.volume;
+        if (!desiredMuted && video.volume === 0) video.volume = desiredVolume = audibleVolume;
+        video.muted = desiredMuted;
+      }
+      ui?.toast(desiredMuted ? 'Muted' : 'Unmuted'); publish(); return;
+    }
     if (!video) return;
     try {
       switch (name) {
@@ -26,7 +34,7 @@ if (location.href.split('?')[0] === trustedURL) {
         case 'seek': if (Number.isFinite(video.duration) && video.seekable.length) { video.currentTime = Math.max(video.seekable.start(0), Math.min(video.currentTime + Number(value), video.seekable.end(video.seekable.length - 1))); ui.toast(`${value > 0 ? '+' : ''}${value} seconds`); } break;
         case 'seekTo': if (Number.isFinite(value) && video.seekable.length) video.currentTime = Math.max(video.seekable.start(0), Math.min(value, video.seekable.end(video.seekable.length - 1))); break;
         case 'volume': if (Number.isFinite(value)) { desiredVolume = Math.max(0, Math.min(1, value)); desiredMuted = false; video.volume = desiredVolume; video.muted = false; } break;
-        case 'mute': desiredMuted = !video.muted; video.muted = desiredMuted; break;
+        case 'mute': action('setMuted', !(video.muted || video.volume === 0)); return;
         case 'rate': if ([0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].includes(value)) { desiredRate = value; video.playbackRate = value; } break;
         case 'reveal': ui.reveal(); break;
       }
@@ -48,6 +56,7 @@ if (location.href.split('?')[0] === trustedURL) {
   function restore() {
     if (!video || !init || restored || video.readyState < 1) return;
     restored = true;
+    if (desiredVolume > 0) audibleVolume = desiredVolume;
     video.volume = desiredVolume; video.muted = desiredMuted; video.playbackRate = desiredRate;
     if (!positionRestored && init.resumeAt > 0 && Number.isFinite(video.duration) && video.seekable.length) video.currentTime = Math.min(init.resumeAt, Math.max(0, video.duration - 1));
     positionRestored = true;
@@ -64,7 +73,7 @@ if (location.href.split('?')[0] === trustedURL) {
     const listen = (event, handler) => next.addEventListener(event, handler, { signal: videoEvents.signal });
     if (video) { video.classList.remove('perch-video'); video.pause(); }
     video = next; restored = false; video.classList.add('perch-video'); error = null; clearTimeout(missingTimer);
-    for (const event of ['play', 'pause', 'loadedmetadata', 'canplay', 'seeking', 'seeked', 'volumechange', 'ratechange', 'error']) listen(event, () => { restore(); publish(); });
+    for (const event of ['play', 'pause', 'loadedmetadata', 'canplay', 'seeking', 'seeked', 'volumechange', 'ratechange', 'error']) listen(event, () => { if (event === 'play' && requestedPause) next.pause(); restore(); publish(); });
     listen('ended', () => {
       publish();
       // YouTube uses the same media element for ads. Only advance for the content video.
@@ -74,7 +83,7 @@ if (location.href.split('?')[0] === trustedURL) {
   }
   ipcRenderer.on('media-command', (_event, payload) => action(payload.command, payload.value));
   ipcRenderer.on('perch-state', (_event, next) => { state = next; if (next.media?.notice) ui?.toast(next.media.notice); render(); });
-  ipcRenderer.on('media-init', (_event, next) => { init = next; state = next; generation = next.generation; desiredVolume = next.volume; desiredRate = next.rate; desiredMuted = Boolean(next.muted); requestedPause = next.autoplay === false; if (next.media?.error) error = next.media.error; restore(); publish(); });
+  ipcRenderer.on('media-init', (_event, next) => { init = next; state = next; generation = next.generation; desiredVolume = next.volume; audibleVolume = next.audibleVolume || 1; desiredRate = next.rate; desiredMuted = Boolean(next.muted); requestedPause = next.autoplay === false; if (next.media?.error) error = next.media.error; restore(); publish(); });
   window.addEventListener('DOMContentLoaded', () => {
     const style = document.createElement('style');
     style.textContent = `html,body{background:#121212!important;overflow:hidden!important}body{visibility:hidden!important}#movie_player{visibility:visible!important;position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;min-width:0!important;z-index:2147483645!important;background:#000!important}#movie_player .html5-video-container{width:100%!important;height:100%!important}video.perch-video{visibility:visible!important;position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;object-fit:contain!important;transform:none!important;z-index:2147483645!important;background:#000!important}#movie_player video.perch-video{position:absolute!important;z-index:auto!important}.ytp-chrome-bottom,.ytp-chrome-top,.ytp-gradient-top,.ytp-gradient-bottom{visibility:hidden!important}`;
@@ -93,11 +102,11 @@ if (location.href.split('?')[0] === trustedURL) {
     window.addEventListener('pagehide', () => { observer.disconnect(); clearInterval(timer); clearTimeout(missingTimer); }, { once: true });
     document.addEventListener('keydown', event => {
       const target = event.composedPath()[0];
-      if (target?.matches?.('input,textarea,select,button,[contenteditable=true]')) return;
+      if (target?.matches?.('input,textarea,select,[contenteditable=true]')) return;
       if (event.metaKey || event.ctrlKey || event.altKey) return;
       const key = event.key.toLowerCase();
       const commands = { ' ': ['toggle'], k: ['toggle'], arrowleft: ['seek', -5], arrowright: ['seek', 5], j: ['seek', -10], l: ['seek', 10], m: ['mute'], arrowup: ['volume', (video?.volume || 0) + .05], arrowdown: ['volume', (video?.volume || 0) - .05], escape: ['reveal'] };
-      if (commands[key]) { event.preventDefault(); event.stopImmediatePropagation(); action(...commands[key]); ui.reveal(); }
+      if (commands[key]) { event.preventDefault(); event.stopImmediatePropagation(); if (!event.repeat || ![' ', 'k', 'm'].includes(key)) action(...commands[key]); ui.reveal(); }
     }, true);
   }, { once: true });
 }

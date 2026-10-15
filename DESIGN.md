@@ -118,6 +118,8 @@ The palette uses dark neutral surfaces, light text and a red playback accent. Th
 
 ## Layout
 
+A quick video tap plays/pauses. Holding for 180ms or moving at least 5 points starts a drag from any non-control part of the video/overlay; controls keep their own interactions. New installs start unpinned.
+
 The player defaults to 480 × 270px and keeps a 16:9 aspect ratio, with a minimum size of 320 × 180px. The queue is a separate 400 × 520px window with a minimum size of 360 × 360px. These are window dimensions, not web page breakpoints.
 
 The home shell places the multiline paste field and Play in one horizontal row, with a short hint and Add to queue beneath. Its main padding is 8px vertically and 20px horizontally. The queue view uses a vertical list with 3px gaps and rows at least 48px high. Titles and source labels truncate on one line; row actions remain alongside them.

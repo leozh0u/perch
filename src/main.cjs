@@ -157,7 +157,7 @@ function action(name, value, target = active()) {
     case 'muteAll': {
       const playing = [...players.values()].filter(session => session.itemId);
       if (!playing.length) break;
-      const muted = playing.some(session => session.media.muted !== true);
+      const muted = playing.some(session => session.media.muted !== true && session.media.volume !== 0);
       store.state.muted = muted;
       for (const session of playing) send(session, 'setMuted', muted);
       persist(); break;
@@ -230,10 +230,10 @@ ipcMain.on('media-state', (event, state) => {
   // Chromium's internal error document also runs the preload. Its empty media
   // status must not erase the actionable network failure recorded above.
   if (!/^https?:/.test(event.senderFrame.url)) return;
-  session.media = { title: String(state.title || 'Video').slice(0, 240), currentTime: Number(state.currentTime) || 0, duration: Number.isFinite(state.duration) ? state.duration : 0, paused: Boolean(state.paused), muted: Boolean(state.muted), loading: Boolean(state.loading), seekable: Boolean(state.seekable), error: typeof state.error === 'string' ? state.error.slice(0, 300) : null };
+  session.media = { title: String(state.title || 'Video').slice(0, 240), currentTime: Number(state.currentTime) || 0, duration: Number.isFinite(state.duration) ? state.duration : 0, paused: Boolean(state.paused), muted: Boolean(state.muted), volume: Number.isFinite(state.volume) ? state.volume : 1, loading: Boolean(state.loading), seekable: Boolean(state.seekable), error: typeof state.error === 'string' ? state.error.slice(0, 300) : null };
   const item = itemFor(session); if (item) { item.title = session.media.title; item.position = session.media.currentTime; }
   store.state.muted = Boolean(state.muted);
-  if (Number.isFinite(state.volume)) store.state.volume = Math.max(0, Math.min(1, state.volume));
+  if (Number.isFinite(state.volume)) { store.state.volume = Math.max(0, Math.min(1, state.volume)); if (store.state.volume > 0) store.state.audibleVolume = store.state.volume; }
   if ([0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].includes(state.rate)) store.state.rate = state.rate;
   if (Date.now() - lastMediaSave > 10000) { persist(); lastMediaSave = Date.now(); }
   broadcast();
@@ -241,7 +241,7 @@ ipcMain.on('media-state', (event, state) => {
 ipcMain.on('media-ended', (event, generation) => {
   const session = sessionFor(event); if (!session || generation !== session.generation) return;
   if (itemFor(session)) itemFor(session).position = 0;
-  if (store.state.autoNext) step(session, 1, true);
+  if (store.state.autoNext && session.autoplay !== false) step(session, 1, true);
   persist(); broadcast();
 });
 

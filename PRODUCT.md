@@ -23,3 +23,5 @@ Name: Perch. Simple, familiar YouTube-like player controls. The video leads; avo
 Public repository leozh0u/perch, under ~/Projects/Technical Projects/perch. A runnable Mac application, README with actual screenshots, setup, rationale, architecture, controls and honest tested limitations. Suitable to share as a personal project; no LinkedIn publication requested.
 
 14 October refinement: new installs start unpinned; the pin remains optional. Option+M globally mutes all open players if any is unmuted, or unmutes all when all are muted, without pausing. Focused M keeps controlling one player.
+
+Follow-up: a quick tap on the video plays/pauses; hold or drag any non-control video/overlay region to move the window. Buttons/sliders retain their actions. Global mute must treat zero volume as silent and restore the last audible volume on unmute.

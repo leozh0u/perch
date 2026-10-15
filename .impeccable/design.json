@@ -28,6 +28,16 @@
         "name": "notice-duration",
         "value": "1200ms",
         "purpose": "Time before removing a notice."
+      },
+      {
+        "name": "drag-hold-delay",
+        "value": "180ms",
+        "purpose": "Distinguishes a long press from a video tap."
+      },
+      {
+        "name": "drag-movement-threshold",
+        "value": "5px",
+        "purpose": "Starts dragging immediately after deliberate pointer movement."
       }
     ],
     "breakpoints": [

@@ -50,20 +50,33 @@ try {
     assert.equal(await player.evaluate(() => typeof window.require), 'undefined');
     await player.locator('#perch-player').getByRole('button', { name: 'Pause', exact: true }).click();
     assert.equal(await player.locator('video').evaluate(video => video.paused), true);
-    await player.locator('video').click({ position: { x: 200, y: 100 } });
+    await player.locator('#perch-drag').focus();
     await player.keyboard.press('Space'); assert.equal(await player.locator('video').evaluate(video => video.paused), false);
     await player.keyboard.press('k'); assert.equal(await player.locator('video').evaluate(video => video.paused), true);
   });
   await check('buttons, conventional keyboard seeks, volume, speed and scrubber', async () => {
     const overlay = player.locator('#perch-player');
+    await player.locator('#perch-drag').click({ position: { x: 220, y: 120 } });
+    assert.equal(await player.locator('video').evaluate(video => video.paused), false, 'Video tap must play');
+    await player.locator('#perch-drag').click({ position: { x: 220, y: 120 } });
+    assert.equal(await player.locator('video').evaluate(video => video.paused), true, 'Video tap must pause');
+    await player.mouse.move(220, 120); await player.mouse.down(); await player.waitForTimeout(250); await player.mouse.up();
+    assert.equal(await player.locator('video').evaluate(video => video.paused), true, 'Holding must not toggle playback');
     await overlay.getByRole('button', { name: 'Forward 10 seconds', exact: true }).click();
     assert.ok(await player.locator('video').evaluate(video => video.currentTime) >= 10);
-    await player.locator('video').click({ position: { x: 220, y: 120 } });
+    await overlay.getByRole('button', { name: 'Forward 10 seconds', exact: true }).press('k');
+    assert.equal(await player.locator('video').evaluate(video => video.paused), false, 'K must work after clicking a control');
+    await overlay.getByRole('button', { name: 'Forward 10 seconds', exact: true }).press('Space');
+    assert.equal(await player.locator('video').evaluate(video => video.paused), true, 'Space must pause even when a seek button has focus');
+    await player.locator('#perch-drag').focus();
     await player.keyboard.press('ArrowRight'); assert.ok(await player.locator('video').evaluate(video => video.currentTime) >= 15);
     await player.keyboard.press('j'); assert.ok(await player.locator('video').evaluate(video => video.currentTime) < 7);
     await player.keyboard.press('l'); assert.ok(await player.locator('video').evaluate(video => video.currentTime) >= 15);
     await overlay.getByLabel('Playback speed').selectOption('1.5'); assert.equal(await player.locator('video').evaluate(video => video.playbackRate), 1.5);
     await overlay.getByRole('button', { name: 'Mute', exact: true }).click(); assert.equal(await player.locator('video').evaluate(video => video.muted), true);
+    await overlay.getByLabel('Volume', { exact: true }).focus(); await overlay.getByLabel('Volume', { exact: true }).fill('0');
+    await overlay.getByRole('button', { name: 'Unmute', exact: true }).click();
+    assert.ok(await player.locator('video').evaluate(video => video.volume) > 0, 'Unmute must restore audible volume after zero');
     await overlay.getByLabel('Video timeline').fill('20'); await overlay.getByLabel('Video timeline').dispatchEvent('change'); assert.ok(await player.locator('video').evaluate(video => video.currentTime) >= 19);
     await overlay.getByLabel('Video timeline').press('ArrowRight'); assert.ok(await player.locator('video').evaluate(video => video.currentTime) < 22);
   });
@@ -83,7 +96,7 @@ try {
   await check('hover hides controls and keyboard focus keeps controls visible', async () => {
     // Queue closure can restore keyboard focus to a player control. Move focus
     // onto the video before checking the separate pointer-idle behaviour.
-    await player.locator('video').click({ position: { x: 200, y: 110 } });
+    await player.locator('#perch-drag').focus();
     await player.mouse.move(200, 110);
     await player.waitForFunction(() => document.querySelector('#perch-player').shadowRoot.querySelector('.chrome').classList.contains('quiet'));
     await player.mouse.move(210, 111);
@@ -147,7 +160,7 @@ try {
     assert.equal(application.windows().length, 3); assert.equal((await queue.evaluate(() => window.perch.getState())).queue.length, 2);
     await queue.locator('#links').fill(`${base}/first`); await queue.getByRole('button', { name: 'Play', exact: true }).click();
     assert.equal(application.windows().length, 3, 'Repeated Play must reuse an existing source');
-    await second.locator('video').click({ position: { x: 180, y: 90 } }); await second.keyboard.press('k');
+    await second.locator('#perch-drag').focus(); await second.keyboard.press('k');
     assert.equal(await second.locator('video').evaluate(video => video.paused), true);
     const origin = await second.evaluate(() => performance.timeOrigin);
     await queue.locator('#links').fill(`${base}/first`); await queue.getByRole('button', { name: 'Play', exact: true }).click();
@@ -163,6 +176,9 @@ try {
     await queue.evaluate(() => window.perch.action('muteAll'));
     await player.waitForFunction(() => !document.querySelector('video').muted);
     await second.waitForFunction(() => !document.querySelector('video').muted);
+    for (const page of [player, second]) { await page.locator('#perch-player').getByLabel('Volume', { exact: true }).focus(); await page.locator('#perch-player').getByLabel('Volume', { exact: true }).fill('0'); }
+    await queue.evaluate(() => window.perch.action('muteAll'));
+    for (const page of [player, second]) await page.waitForFunction(() => !document.querySelector('video').muted && document.querySelector('video').volume > 0);
     await queue.getByLabel('Allow two players', { exact: true }).uncheck();
     await second.waitForTimeout(100);
     assert.equal(application.windows().length, 2, 'Disabling dual mode must destroy the extra player');
@@ -183,6 +199,11 @@ try {
     await queue.locator('#links').fill(`${base}/slow`); await queue.getByRole('button', { name: 'Play', exact: true }).click();
     await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows().find(win => !win.webContents.getURL().includes('view=queue')).close());
     await survivor.waitForFunction(() => document.querySelector('video')?.readyState >= 2);
+    await survivor.locator('video').evaluate(video => video.play().catch(() => {}));
+    await survivor.waitForFunction(() => document.querySelector('video').paused);
+    await survivor.locator('video').evaluate(video => video.dispatchEvent(new Event('ended')));
+    await survivor.waitForTimeout(200);
+    assert.equal(survivor.url(), `${base}/slow`, 'A late site event after close must not advance the queue');
     assert.equal(await survivor.locator('video').evaluate(video => video.paused), true, 'Closing while loading must suppress later autoplay');
     assert.equal(await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows().find(win => !win.webContents.getURL().includes('view=queue')).isVisible()), false);
     await queue.close();

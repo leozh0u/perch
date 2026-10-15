@@ -212,5 +212,25 @@
     "date": "2026-10-14",
     "optionSpaceKeepsAudio": true,
     "visibleAcrossFullscreen": true
+  },
+  "v0_1_1Gestures": {
+    "source": "Installed packaged app with native CUA pointer gestures and local bounds persistence",
+    "dragOrigin": "Middle of video, outside controls",
+    "before": {
+      "x": 936,
+      "y": 105,
+      "width": 480,
+      "height": 270
+    },
+    "after": {
+      "x": 816,
+      "y": 65,
+      "width": 480,
+      "height": 270
+    },
+    "playbackContinuedDuringDrag": true,
+    "quickTapPaused": true,
+    "playControlResumed": true,
+    "optionMPhysicalCheck": "pending after zero-volume recovery fix"
   }
 }
