@@ -33,6 +33,10 @@ export function createPlayerUI(onAction) {
   const brand = make('div', 'brand', top);
   brand.append(iconNode('perch'));
   make('span', 'title', brand).textContent = 'Perch';
+  const captions = button(top, 'captions', 'Captions', 'captions', 'Captions (C)');
+  captions.className = 'captions';
+  captions.setAttribute('aria-pressed', 'false');
+  captions.disabled = true;
   const pin = button(top, 'pin', 'Keep on top', 'pin');
   pin.className = 'pin';
   pin.setAttribute('aria-pressed', 'true');
@@ -168,10 +172,13 @@ export function createPlayerUI(onAction) {
   const timeline = root.querySelector('.timeline');
   function reveal() {
     chrome.classList.remove('quiet');
+    host.setAttribute('data-controls-visible', '');
     clearTimeout(hideTimer);
     hideTimer = setTimeout(() => {
-      if (!hoveringControls && !root.activeElement?.matches(':focus-visible'))
+      if (!hoveringControls && !root.activeElement?.matches(':focus-visible')) {
         chrome.classList.add('quiet');
+        host.removeAttribute('data-controls-visible');
+      }
     }, 2300);
   }
   function toast(message) {
@@ -224,6 +231,12 @@ export function createPlayerUI(onAction) {
   function update(state) {
     const video = state.video;
     root.querySelector('.title').textContent = state.title || 'Perch';
+    captions.disabled = !state.captions?.available;
+    captions.setAttribute(
+      'aria-pressed',
+      String(Boolean(state.captions?.available && state.captions.enabled)),
+    );
+    captions.title = state.captions?.available ? 'Captions (C)' : 'No captions available';
     root.querySelector('.pin').setAttribute('aria-pressed', String(state.pinned !== false));
     const close = root.querySelector('[data-action=hide]');
     close.setAttribute('aria-label', state.multiplePlayers ? 'Close player' : 'Pause and hide');

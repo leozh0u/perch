@@ -39,6 +39,30 @@ if (location.href.split('?')[0] === trustedURL) {
   let requestedPause = false;
   let videoEvents,
     lastProgress = Date.now();
+  let captionTrack;
+  function captions() {
+    if (!video || document.querySelector('#movie_player.ad-showing,#movie_player.ad-interrupting'))
+      return { available: false, enabled: false };
+    const button = document.querySelector('#movie_player .ytp-subtitles-button');
+    if (button)
+      return {
+        button,
+        available:
+          !button.disabled &&
+          button.getAttribute('aria-disabled') !== 'true' &&
+          // YouTube's narrow layout hides all native right-hand buttons via CSS.
+          button.style.display !== 'none',
+        enabled: button.getAttribute('aria-pressed') === 'true',
+      };
+    const tracks = [...video.textTracks].filter((track) =>
+      ['captions', 'subtitles'].includes(track.kind),
+    );
+    return {
+      tracks,
+      available: tracks.length > 0,
+      enabled: tracks.some((track) => track.mode === 'showing'),
+    };
+  }
   const action = (name, value) => {
     if (
       ['queue', 'hide', 'pin', 'external', 'next', 'previous', 'retry', 'size', 'drag'].includes(
@@ -68,6 +92,24 @@ if (location.href.split('?')[0] === trustedURL) {
     if (!video) return;
     try {
       switch (name) {
+        case 'captions': {
+          const current = captions();
+          if (!current.available) {
+            ui.toast('No captions available.');
+            break;
+          }
+          if (current.button) current.button.click();
+          else {
+            const preferred = video.querySelector('track[default]')?.track;
+            captionTrack =
+              current.tracks.find((track) => track.mode === 'showing') ||
+              (current.tracks.includes(captionTrack) ? captionTrack : null) ||
+              (current.tracks.includes(preferred) ? preferred : current.tracks[0]);
+            for (const track of current.tracks)
+              track.mode = !current.enabled && track === captionTrack ? 'showing' : 'disabled';
+          }
+          break;
+        }
         case 'toggle':
           if (video.paused) {
             requestedPause = false;
@@ -136,6 +178,7 @@ if (location.href.split('?')[0] === trustedURL) {
       pinned: state.pinned,
       multiplePlayers: state.players?.length > 1,
       queueCount: state.queue?.length,
+      captions: captions(),
       hasPrevious: index > 0 && state.queue.slice(0, index).some(available),
       hasNext: index >= 0 && state.queue.slice(index + 1).some(available),
     });
@@ -329,6 +372,7 @@ if (location.href.split('?')[0] === trustedURL) {
             j: ['seek', -10],
             l: ['seek', 10],
             m: ['mute'],
+            c: ['captions'],
             arrowup: ['volume', (video?.volume || 0) + 0.05],
             arrowdown: ['volume', (video?.volume || 0) - 0.05],
             escape: ['reveal'],
@@ -336,7 +380,7 @@ if (location.href.split('?')[0] === trustedURL) {
           if (commands[key]) {
             event.preventDefault();
             event.stopImmediatePropagation();
-            if (!event.repeat || ![' ', 'k', 'm'].includes(key)) action(...commands[key]);
+            if (!event.repeat || ![' ', 'k', 'm', 'c'].includes(key)) action(...commands[key]);
             ui.reveal();
           }
         },

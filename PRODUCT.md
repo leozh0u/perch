@@ -31,3 +31,5 @@ Follow-up: a quick tap on the video plays/pauses; hold or drag any non-control v
 14 October queue/menu refinement: run in the menu bar without a Dock entry; reopening reuses the existing app. Drag queue rows with an insertion marker and brief reorder/press feedback, while keeping explicit move buttons and reduced-motion support. Yield native YouTube ad controls while ads play. Use Leo's supplied desktop screenshot as the README hero.
 
 14 October motivation, supplied by Leo: he was practising on Zetamac while listening to a video and wanted to watch it in his peripheral vision too. Use this explanation in the README; keep public explanations concise, humanised and semiformal.
+
+15 October captions: Leo requested captions when available. Add a compact CC toggle and focused C shortcut; use the source’s native captions or HTML caption/subtitle tracks, with an unavailable state.

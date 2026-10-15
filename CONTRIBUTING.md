@@ -34,6 +34,8 @@ node scripts/verify-youtube.mjs --visible
 
 Quit your normal Perch first. This is an explicit visible native session with a temporary profile, one test app, normal browser audio and working shortcuts. Invisible website runs changed YouTube media behaviour on this Mac, so they are not used as the playback test. The synthetic workflow checks above stay invisible and silent. YouTube availability can affect the result. Raw evidence stays in ignored `output/`; selected public evidence goes in `docs/evidence/`.
 
+For the captions integration, `node scripts/verify-captions.mjs` checks YouTube’s native toggle and visible subtitle text in an isolated, silent profile. Use `node scripts/verify-captions.mjs --visible` after quitting normal Perch for the visible version. `--url=https://www.youtube.com/watch?v=VIDEO_ID` selects another public video; quote that argument in your shell. The source must actually deliver captions for the text assertion to pass. Do not run two native test suites together: their pointer/focus checks can interfere.
+
 ## Build a Mac app
 
 ```sh

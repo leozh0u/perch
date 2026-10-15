@@ -60,6 +60,17 @@ svg {
 button svg {
   pointer-events: none;
 }
+.captions {
+  position: relative;
+}
+.captions[aria-pressed='true']::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 2px;
+  bottom: 2px;
+  background: var(--accent);
+}
 .top,
 .bottom {
   position: absolute;

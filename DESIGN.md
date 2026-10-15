@@ -124,7 +124,7 @@ The player defaults to 480 × 270px and keeps a 16:9 aspect ratio, with a minimu
 
 The home shell places the multiline paste field and Play in one horizontal row, with a short hint and Add to queue beneath. Its main padding is 8px vertically and 20px horizontally. The queue view uses a vertical list with 3px gaps and rows at least 48px high. Titles and source labels truncate on one line; row actions remain alongside them.
 
-The player's top overlay is 54px high, with title, pin, browser, queue and hide controls. Bottom controls use a full-width timeline above a single control row. The default player button is 32 × 32px. Its volume slider expands from zero width to 52px on hover or focus within.
+The player's top overlay is 54px high, with title, CC, pin, browser, queue and hide controls. Bottom controls use a full-width timeline above a single control row. The default player button is 32 × 32px. Its volume slider expands from zero width to 52px on hover or focus within.
 
 At a maximum shell width of 370px, shell padding and queue text widths reduce. At a maximum player width of 390px, row gaps disappear, bottom padding narrows to 8px, buttons become 29px wide, time text reduces and the expanded volume slider becomes 35px wide.
 
@@ -155,6 +155,8 @@ Each row groups its index or active play icon, title, source and explicit move/r
 Playback actions follow the familiar order: previous, play/pause, back 10 seconds, forward 10 seconds, next, time, volume and speed. The timeline shows red progress over a translucent track. Controls become unavailable when the required video or seek range is missing. Speed choices run from 0.5× to 2×.
 
 The top and bottom overlays fade with `opacity .18s ease-out` after 2.3 seconds of inactivity. Pointer movement and focus restore them; visible keyboard focus keeps them accessible. Volume expansion uses 150ms width and opacity transitions. Notices fade over 150ms and remain visible for 1.2 seconds. Reduced-motion preferences disable transitions.
+
+Captions use a labelled CC toggle in the top row. A red underline and aria-pressed state identify enabled captions. The button stays in place but is disabled when unavailable or during YouTube ads; C toggles it in the focused player. No language picker is added. While controls are visible, YouTube captions clear the bottom row by 52 points; they return to the source position when controls fade.
 
 ### Status and recovery
 

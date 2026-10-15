@@ -1,7 +1,7 @@
 {
   "name": "perch-player",
   "productName": "Perch",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A floating video player for macOS, with familiar controls and a queue.",
   "main": "src/main.cjs",
   "author": "Leo Zhou <zhouleo2007@gmail.com>",

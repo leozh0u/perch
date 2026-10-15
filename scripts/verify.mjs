@@ -294,6 +294,130 @@ try {
     });
   });
   await check(
+    'captions toggle native text tracks and YouTube controls without pausing',
+    async () => {
+      const cc = player
+        .locator('#perch-player')
+        .getByRole('button', { name: 'Captions', exact: true });
+      assert.equal(await cc.isDisabled(), true);
+      const paused = await player.locator('video').evaluate((video) => video.paused);
+      await player.evaluate(() => {
+        const video = document.querySelector('video');
+        const english = video.addTextTrack('captions', 'English', 'en');
+        english.addCue(new VTTCue(0, 40, 'Perch caption test'));
+        const french = video.addTextTrack('subtitles', 'French', 'fr');
+        french.addCue(new VTTCue(0, 40, 'Sous-titres Perch'));
+        english.mode = french.mode = 'disabled';
+        video.addTextTrack('metadata', 'Metadata').mode = 'hidden';
+      });
+      await player.waitForFunction(
+        () =>
+          !document
+            .querySelector('#perch-player')
+            .shadowRoot.querySelector('[data-action=captions]').disabled,
+      );
+      await cc.click();
+      assert.equal(await cc.getAttribute('aria-pressed'), 'true');
+      assert.deepEqual(
+        await player.locator('video').evaluate((v) => [...v.textTracks].map((t) => t.mode)),
+        ['showing', 'disabled', 'hidden'],
+      );
+      await cc.press('c');
+      assert.equal(await cc.getAttribute('aria-pressed'), 'false');
+      await player.keyboard.down('c');
+      await player.keyboard.down('c');
+      await player.keyboard.up('c');
+      assert.equal(
+        await cc.getAttribute('aria-pressed'),
+        'true',
+        'Holding C must toggle only once',
+      );
+      await player.evaluate(() => {
+        const tracks = document.querySelector('video').textTracks;
+        tracks[0].mode = 'disabled';
+        tracks[1].mode = 'showing';
+      });
+      await cc.click();
+      await cc.click();
+      assert.deepEqual(
+        await player.locator('video').evaluate((v) => [...v.textTracks].map((t) => t.mode)),
+        ['disabled', 'showing', 'hidden'],
+        'Toggling retains the selected track and leaves metadata alone',
+      );
+      assert.equal(await player.locator('video').evaluate((v) => v.paused), paused);
+      await player.evaluate(() => {
+        const video = document.querySelector('video');
+        const site = document.createElement('div');
+        site.id = 'movie_player';
+        video.before(site);
+        site.append(video);
+        const button = document.createElement('button');
+        const responsiveStyle = document.createElement('style');
+        responsiveStyle.id = 'caption-responsive-fixture';
+        responsiveStyle.textContent = '.ytp-subtitles-button { display: none; }';
+        document.head.append(responsiveStyle);
+        button.className = 'ytp-subtitles-button';
+        button.setAttribute('aria-pressed', 'false');
+        button.addEventListener('click', () =>
+          button.setAttribute(
+            'aria-pressed',
+            String(button.getAttribute('aria-pressed') !== 'true'),
+          ),
+        );
+        site.append(button);
+        const pane = document.createElement('div');
+        pane.className = 'ytp-caption-window-container';
+        pane.style.height = '100%';
+        site.append(pane);
+      });
+      await player.waitForFunction(
+        () =>
+          document
+            .querySelector('#perch-player')
+            .shadowRoot.querySelector('[data-action=captions]')
+            .getAttribute('aria-pressed') === 'false',
+      );
+      await cc.click();
+      assert.equal(
+        await player
+          .locator('.ytp-caption-window-container')
+          .evaluate((node) => node.getBoundingClientRect().height),
+        (await player.evaluate(() => innerHeight)) - 52,
+        'Captions must clear the visible playback controls',
+      );
+      assert.equal(
+        await player.locator('.ytp-subtitles-button').getAttribute('aria-pressed'),
+        'true',
+      );
+      await cc.press('c');
+      assert.equal(
+        await player.locator('.ytp-subtitles-button').getAttribute('aria-pressed'),
+        'false',
+      );
+      await player.evaluate(
+        () => (document.querySelector('.ytp-subtitles-button').style.display = 'none'),
+      );
+      await player.waitForFunction(
+        () =>
+          document.querySelector('#perch-player').shadowRoot.querySelector('[data-action=captions]')
+            .disabled,
+      );
+      await player.evaluate(() => {
+        document.querySelector('.ytp-subtitles-button').style.display = '';
+        document.querySelector('#movie_player').className = 'ad-showing';
+      });
+      await player.waitForTimeout(1100);
+      assert.equal(await cc.isDisabled(), true, 'Ad controls stay owned by YouTube');
+      await player.evaluate(() => {
+        const site = document.querySelector('#movie_player');
+        site.before(site.querySelector('video'));
+        site.remove();
+        document.querySelector('#caption-responsive-fixture').remove();
+        for (const track of document.querySelector('video').textTracks) track.mode = 'disabled';
+      });
+    },
+  );
+  await check(
     'queue remains editable while video plays; stable identity through reorder',
     async () => {
       const queuePromise = application.waitForEvent('window');

@@ -4,7 +4,7 @@
 
 A free floating video player for macOS. Paste a YouTube link, put it beside your work, and keep watching as you switch apps.
 
-**[Download for Apple Silicon](https://github.com/leozh0u/perch/releases/download/v0.1.3/Perch-mac-arm64.zip)** · [All releases](https://github.com/leozh0u/perch/releases) · [Report a bug](https://github.com/leozh0u/perch/issues/new/choose)
+**[Download for Apple Silicon](https://github.com/leozh0u/perch/releases/download/v0.1.4/Perch-mac-arm64.zip)** · [All releases](https://github.com/leozh0u/perch/releases) · [Report a bug](https://github.com/leozh0u/perch/issues/new/choose)
 
 macOS 13 or later, M1 or newer. Free and open source under the [MIT licence](LICENSE). No account, subscription or API key required by Perch.
 
@@ -14,7 +14,7 @@ Perch floating over VS Code on my Mac. Hold or drag the video to move it; drag a
 
 ## Install
 
-1. **[Download Perch-mac-arm64.zip](https://github.com/leozh0u/perch/releases/download/v0.1.3/Perch-mac-arm64.zip).** You do not need to download the source-code ZIP.
+1. **[Download Perch-mac-arm64.zip](https://github.com/leozh0u/perch/releases/download/v0.1.4/Perch-mac-arm64.zip).** You do not need to download the source-code ZIP.
 2. In Finder, open **Downloads** and double-click the ZIP to unzip it. Safari may already have unzipped it.
 3. Drag **Perch.app** into **Applications**.
 4. Open **Applications**, then double-click **Perch**.
@@ -40,7 +40,7 @@ The idea came from practising on Zetamac while listening to a video. I wanted to
 
 Safari and Chrome already have picture-in-picture. I wanted a separate Mac app with familiar keyboard controls and a queue, so I could close the browser tab and keep watching.
 
-The player has a timeline, volume and speed controls that appear on hover. It also has an optional second player, disabled by default.
+The player has a timeline, captions, volume and speed controls that appear on hover. It also has an optional second player, disabled by default.
 
 ## Open and queue videos
 
@@ -66,6 +66,8 @@ If the global shortcut is already used by another app, Perch reports the conflic
 
 <img src="docs/images/player.png" width="640" alt="Close-up of Perch's hover controls playing Big Buck Bunny">
 
+**Captions:** click **CC** in the top controls, or press **C** while the player is focused. A red line under CC means captions are on. The button is disabled when none are available. YouTube uses its own captions and selected language; standard HTML videos use their caption or subtitle tracks. Availability depends on the video.
+
 Playback keys apply to the focused player. They do not intercept typing in other apps or in Perch's link field.
 
 | Key | Action |
@@ -75,6 +77,7 @@ Playback keys apply to the focused player. They do not intercept typing in other
 | J / L | Back / forward 10 seconds |
 | Up / Down | Increase / decrease volume |
 | M | Mute / unmute focused player |
+| C | Toggle captions, when available |
 | Option+M | Mute / unmute all players from any app |
 | Command+Shift+Right / Left | Next / previous queued video |
 | Command+O | Open queue and links |
@@ -120,7 +123,7 @@ Remote pages have no Node integration or privileged `window.perch` bridge. That 
 
 The app has been tested on an Apple Silicon Mac running macOS 26.6.2. The current checks cover real Electron playback, keyboard and pointer controls, queue changes, opt-in dual players, error recovery and selected remote-page boundaries. Native dragging, resizing, Option+Space, fullscreen behaviour and Option+M were also checked on this Mac. See [verification evidence](docs/VERIFICATION.md) for exact coverage and build versions.
 
-YouTube can change its page structure. Public YouTube playback is the main supported workflow; generic HTML-video pages are best effort. DRM services, private/age-restricted videos, sign-in flows, captions, playlist URLs, full browser-tab mirroring and every streaming site are not promised. Site ads and access restrictions still apply. There is no automatic updater or login item in this version.
+YouTube can change its page structure. Public YouTube playback is the main supported workflow; generic HTML-video pages are best effort. DRM services, private/age-restricted videos, sign-in flows, caption translation/language selection, playlist URLs, full browser-tab mirroring and every streaming site are not promised. Site ads and access restrictions still apply. There is no automatic updater or login item in this version.
 
 ## Credits and licence
 

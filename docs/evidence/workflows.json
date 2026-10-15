@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-15T04:35:05.760Z",
+  "date": "2026-10-15T05:36:39.922Z",
   "platform": "darwin",
   "results": [
     {
@@ -24,6 +24,10 @@
     },
     {
       "name": "YouTube ad controls accept native clicks and keyboard input",
+      "status": "pass"
+    },
+    {
+      "name": "captions toggle native text tracks and YouTube controls without pausing",
       "status": "pass"
     },
     {

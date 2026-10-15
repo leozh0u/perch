@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-15",
+  "build": "0.1.4",
+  "platform": "macOS 26.6.2, Apple Silicon",
+  "method": "Native macOS accessibility and pointer/keyboard input on installed app",
+  "observed": {
+    "captionsPresentBeforeToggle": true,
+    "focusedCToggledOff": true,
+    "captionTextRemovedWhenOff": true,
+    "buttonToggledOffAfterKeyboardReveal": true,
+    "focusedCToggledOn": true,
+    "captionTextReturnedWhenOn": true,
+    "pausedTimeUnchanged": "0:17 / 20:10"
+  },
+  "notes": "Existing media session; no user queue URLs or desktop screenshot published. Fresh isolated public-site caption-text checks failed separately."
+}
