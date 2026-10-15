@@ -54,7 +54,7 @@ Patch source CI passed: [38677195931](https://github.com/leozh0u/perch/actions/r
 
 ## 0.1.2 public cleanup
 
-The follow-up adds the chair/play mark, a viewport-recorded animated README demo and a four-step end-user download guide. Source/contributor instructions are separate from the download flow. Command+Shift+P no longer opens Perch; only Option+Space and Option+M are globally registered.
+The follow-up adds the chair/play mark, actual player screenshots and a four-step end-user download guide. Source/contributor instructions are separate from the download flow. Command+Shift+P no longer opens Perch; only Option+Space and Option+M are globally registered.
 
 A read-only code pass and a separate security pass found three correctness/usability issues and two low-risk hardening items, all corrected and regression-checked. See [SECURITY_REVIEW.md](SECURITY_REVIEW.md). No fourth round of the earlier three-round design critique was run.
 
@@ -64,4 +64,6 @@ The production app passes strict/deep ad-hoc signature verification and is insta
 
 Public YouTube was rechecked after branding: more than 35 seconds after seek and zero-volume mute/unmute recovery passed. Two interim runs with native test-only audio silencing failed playback-state assertions; the final check uses normal browser audio and retains failure diagnostics. This is documented as a test-setting limitation, not proof that every background/site configuration works.
 
-The [0.1.2 preview](https://github.com/leozh0u/perch/releases/tag/v0.1.2) is public. GitHub's asset digest matches the local ZIP above. [CI 38680001984](https://github.com/leozh0u/perch/actions/runs/38680001984) passed format/build/unit/audit for source commit `7cd3175`. The public README's logo, animated demo and download/install guide were visually checked in Chrome.
+The [0.1.2 preview](https://github.com/leozh0u/perch/releases/tag/v0.1.2) is public. GitHub's asset digest matches the local ZIP above. [CI 38680001984](https://github.com/leozh0u/perch/actions/runs/38680001984) passed format/build/unit/audit for source commit `7cd3175`. The public README's logo and download/install guide were visually checked in Chrome; the initial animated demo was subsequently replaced with a still at Leo's request.
+
+Screenshot follow-up: Leo preferred a still image. The current README replaces the animation with an inspected frame of the actual app, showing the chair mark and playback controls, plus a drag/resize caption. The earlier animation evidence describes the previous revision; the current public tree uses screenshots. The app and ZIP are unchanged.

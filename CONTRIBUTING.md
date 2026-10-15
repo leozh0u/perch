@@ -57,13 +57,7 @@ node scripts/native-session.mjs
 
 It goes under ignored `output/test-app/`, retains the inspector for Playwright, and cannot be zipped by the packaging script. Quit your normal Perch first if you want to test global shortcut registration. The native session lasts at most ten minutes; Command+Q ends it. Do not distribute that test package.
 
-To refresh the README demo, with FFmpeg installed:
-
-```sh
-node scripts/record-demo.mjs
-```
-
-It records only the app viewport with a fresh profile, then creates `docs/images/demo.gif`. It does not capture your desktop. Preserve the film attribution in the README.
+The public YouTube check captures the player and queue in `output/playwright/`. When refreshing README screenshots, inspect them first, copy the selected images into `docs/images/`, and preserve the film attribution. Use an isolated test profile; do not capture personal queues or desktop content.
 
 ## Icons
 

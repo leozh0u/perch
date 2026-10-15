@@ -8,9 +8,9 @@ A free floating video player for macOS. Paste a YouTube link, put it beside your
 
 macOS 13 or later, M1 or newer. Free and open source under the [MIT licence](LICENSE). No account, subscription or API key required by Perch.
 
-![Perch demo: playing, pausing, seeking and muting a YouTube video](docs/images/demo.gif)
+<img src="docs/images/player.png" width="640" alt="Perch playing a YouTube video with its hover controls visible">
 
-Actual app playback and controls recorded on a Mac. The demo shows *Big Buck Bunny*; film credits are below.
+Perch on a Mac, with the hover controls visible. Hold or drag the video to move the window; drag an edge or corner to resize it. The screenshot shows *Big Buck Bunny*; film credits are below.
 
 ## Install
 
