@@ -137,3 +137,5 @@ Wake/unlock now refresh owned Option+Space and Option+M registrations and broadc
 Per Leo's request the audible process was terminated; no saved video was restarted. The final installed app's silent launch screen was observed with its link field focused. A physical shortcut check was interrupted by concurrent user input, so it is not certified; Perch was then quit again. Physical sleep/wake and fullscreen coverage for this new build remain unverified. Earlier build confirmations are historical, not substitutes. [Sanitised evidence](evidence/reveal-0.1.7.json).
 
 Installed/release ASAR runtime matches source, signature and production fuse checks pass. ZIP SHA-256: `e4d8748276486ddaab622de1654cd2b83b254769c4740c6977981ff0513cea3d`.
+
+The [0.1.7 preview](https://github.com/leozh0u/perch/releases/tag/v0.1.7) is public. GitHub’s ZIP digest matches the checksum above; [CI 38840241262](https://github.com/leozh0u/perch/actions/runs/38840241262) passed for source `217efb803c2f0252b88d430300a20160a977c20a`. Perch was verified closed after testing, as requested.

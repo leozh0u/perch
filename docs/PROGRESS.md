@@ -157,3 +157,10 @@ Leo then explicitly requested playback stop. Normal Perch was terminated and its
 
 
 0.1.7 implementation/tests complete: isolated native-panel checks exposed missed show/hide events, so the fix now records show/hide intent directly in the commands as well as focusing explicit reveal. A focused player also overrides lagging page visibility. Six successive recovered toggles alternate correctly. Seventeen Electron workflows, six unit groups and formatting pass. Wake/unlock recovery is checked with deliberately removed registrations and simulated Electron power-monitor events. Final package is installed and source/ASAR/signature/fuses match. A silent home launch focused its field; physical shortcut input was interrupted by concurrent user input and is not counted as a pass. The app was quit again; no saved video was restarted. Remaining: push/release/digest/CI and canonical context. Do not claim the original production flags or physical sleep/fullscreen trigger were captured.
+
+
+## 0.1.7 delivery complete
+
+15 October 2026: source `217efb803c2f0252b88d430300a20160a977c20a` is pushed with verified leozh0u attribution. [CI 38840241262](https://github.com/leozh0u/perch/actions/runs/38840241262) passed. The [0.1.7 preview](https://github.com/leozh0u/perch/releases/tag/v0.1.7) is public; its 127,300,315-byte ZIP matches local/GitHub SHA-256 `e4d8748276486ddaab622de1654cd2b83b254769c4740c6977981ff0513cea3d`. Installed source/ASAR/signature/fuses match; README and canonical context are updated. Normal Perch is verified not running; no saved video was restarted.
+
+Request audit: immediate audio/video stop is complete. The reproduced visibility-state/focus weakness and startup-only shortcut registration are fixed, with 17 Electron workflows, 6 unit groups, formatting and CI passing. This is not a claim that the original production flags or every OS failure were captured. Real fullscreen/sleep/wake testing for this build remains explicitly unverified after the stop request; the app stays closed for Leo to launch when ready. No new permissions, dependencies, global keys, background task or unrelated project changes were added.
