@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-15T19:24:32.283Z",
+  "date": "2026-10-16T02:19:55.444Z",
   "platform": "darwin",
   "results": [
     {
@@ -47,6 +47,10 @@
       "status": "pass"
     },
     {
+      "name": "explicit reveal restores a hidden app and focuses the player without pausing",
+      "status": "pass"
+    },
+    {
       "name": "native panel flags, resize and pin toggle",
       "status": "pass"
     },
@@ -60,6 +64,10 @@
     },
     {
       "name": "no-video and network failures recover through the same queue",
+      "status": "pass"
+    },
+    {
+      "name": "wake and unlock restore shortcut registrations and preserve hidden players",
       "status": "pass"
     }
   ]

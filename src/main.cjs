@@ -99,26 +99,45 @@ function send(session, command, value) {
 }
 function reveal(session) {
   if (!session || session.win.isDestroyed()) return;
+  if (process.platform === 'darwin' && app.isHidden()) app.show();
   session.win.setBounds(recoverBounds(session.win.getBounds(), screen.getAllDisplays()));
   floating(session.win);
-  session.win.showInactive();
+  session.win.show();
+  session.shown = true;
   session.win.moveTop();
 }
 function showPlayers() {
   if (!players.size) createPlayer();
   for (const session of players.values()) reveal(session);
 }
+function hidePlayer(session) {
+  // Native panels can miss show/hide events; keep our own commands synchronous.
+  session.shown = false;
+  session.win.hide();
+}
 function togglePlayers() {
-  if ([...players.values()].some((session) => session.shown && session.visibility !== 'hidden'))
-    for (const session of players.values()) session.win.hide();
+  if (
+    !(process.platform === 'darwin' && app.isHidden()) &&
+    [...players.values()].some(
+      (session) => session.win.isFocused() || (session.shown && session.visibility !== 'hidden'),
+    )
+  )
+    for (const session of players.values()) hidePlayer(session);
   else showPlayers();
+}
+function registerShortcuts() {
+  if (!systemUI) return;
+  globalShortcut.unregister('Alt+Space');
+  globalShortcut.unregister('Alt+M');
+  toggleShortcutAvailable = globalShortcut.register('Alt+Space', togglePlayers);
+  muteShortcutAvailable = globalShortcut.register('Alt+M', () => action('muteAll'));
 }
 function closePlayer(session) {
   if (!session) return;
   session.autoplay = false;
   send(session, 'pause');
   if (players.size > 1) session.win.destroy();
-  else session.win.hide();
+  else hidePlayer(session);
 }
 function secureContents(contents, localOnly = false) {
   contents.setWindowOpenHandler(() => ({ action: 'deny' }));
@@ -202,7 +221,7 @@ function createPlayer(home = true) {
   secureContents(win.webContents);
   if (home) {
     win.loadFile(homePath);
-    win.once('ready-to-show', () => win.showInactive());
+    win.once('ready-to-show', () => reveal(session));
   }
   win.webContents.on('did-finish-load', broadcast);
   win.webContents.on('did-fail-load', (_event, code, _description, _url, mainFrame) => {
@@ -610,7 +629,7 @@ app.whenReady().then(() => {
   if (process.platform === 'darwin') app.setActivationPolicy('accessory');
   store = createStore(app.getPath('userData'), testing);
   createPlayer();
-  if (systemUI) {
+  if (!testing) {
     const icon = nativeImage
       .createFromPath(path.join(__dirname, '../assets/trayTemplate.png'))
       .resize({ width: 18, height: 18 });
@@ -678,10 +697,7 @@ app.whenReady().then(() => {
       },
     ]),
   );
-  if (systemUI) {
-    toggleShortcutAvailable = globalShortcut.register('Alt+Space', togglePlayers);
-    muteShortcutAvailable = globalShortcut.register('Alt+M', () => action('muteAll'));
-  }
+  registerShortcuts();
   const recover = () => {
     for (const session of players.values()) {
       session.win.setBounds(recoverBounds(session.win.getBounds(), screen.getAllDisplays()));
@@ -690,8 +706,13 @@ app.whenReady().then(() => {
   };
   for (const event of ['display-added', 'display-removed', 'display-metrics-changed'])
     screen.on(event, recover);
-  powerMonitor.on('resume', recover);
-  powerMonitor.on('unlock-screen', recover);
+  const resume = () => {
+    registerShortcuts();
+    recover();
+    broadcast();
+  };
+  powerMonitor.on('resume', resume);
+  powerMonitor.on('unlock-screen', resume);
 });
 app.on('activate', () => {
   if (store) showPlayers();

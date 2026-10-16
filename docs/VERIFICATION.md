@@ -125,3 +125,15 @@ Native installed 0.1.6 confirmation: reopened the same queued video near the sav
 Release and installed ASAR runtime/preload match source; strict/deep signature and production fuse checks pass. ZIP SHA-256: `3050ecde0e575a59457de65cf500374ddeb35529676a8f8208909fdc2f4e18a7`. Existing platform, distribution and public streaming limits still apply.
 
 The [0.1.6 preview](https://github.com/leozh0u/perch/releases/tag/v0.1.6) is public; GitHub’s ZIP digest matches the recorded checksum. [CI 38794312466](https://github.com/leozh0u/perch/actions/runs/38794312466) passed for source `55d513eda0ef6db9923c43d897fa4648df39318a`.
+
+## 0.1.7 visibility intent and shortcut recovery
+
+15 October 2026: Leo again reported audible playback with an invisible player and ineffective Option+Space. There was one production process, pin off and saved bounds within the connected display. Its original internal registration/visibility flags were not available for inspection before Leo requested playback stop; the exact production trigger is not claimed as established.
+
+New checks exposed two weaknesses: explicit inactive reveal did not focus the player, and native panel show/hide commands could fail to emit the events used to update Perch's visibility flag. Show/hide commands now update that intent synchronously; focused windows count as revealed even if renderer visibility lags. Explicit reveal and first launch show/focus the panel, restore app-level hiding if necessary, and preserve the pin preference and playback state. This supersedes the older no-focus reveal behaviour.
+
+Wake/unlock now refresh owned Option+Space and Option+M registrations and broadcast conflict state. Tests explicitly remove those registrations, emit each real Electron power-monitor event, and verify restoration without automatically revealing a hidden player. Six successive recovered visibility callbacks alternate focus true/false correctly. The old explicit-reveal focus assertion failed before the change. All 17 actual-Electron workflows, 6 unit groups and formatting pass. No extra shortcut, permission, dependency, polling service or remote-page privilege was added.
+
+Per Leo's request the audible process was terminated; no saved video was restarted. The final installed app's silent launch screen was observed with its link field focused. A physical shortcut check was interrupted by concurrent user input, so it is not certified; Perch was then quit again. Physical sleep/wake and fullscreen coverage for this new build remain unverified. Earlier build confirmations are historical, not substitutes. [Sanitised evidence](evidence/reveal-0.1.7.json).
+
+Installed/release ASAR runtime matches source, signature and production fuse checks pass. ZIP SHA-256: `e4d8748276486ddaab622de1654cd2b83b254769c4740c6977981ff0513cea3d`.

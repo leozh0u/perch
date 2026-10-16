@@ -686,6 +686,34 @@ try {
       false,
     );
   });
+  await check(
+    'explicit reveal restores a hidden app and focuses the player without pausing',
+    async () => {
+      const before = await player
+        .locator('video')
+        .evaluate((v) => ({ paused: v.paused, time: v.currentTime }));
+      await application.evaluate(({ app, BrowserWindow }) => {
+        BrowserWindow.getAllWindows()[0].hide();
+        if (process.platform === 'darwin') app.hide();
+      });
+      await application.evaluate(({ Menu }) =>
+        Menu.getApplicationMenu()
+          .items[0].submenu.items.find((i) => i.label === 'Show players')
+          .click(),
+      );
+      await player.waitForTimeout(150);
+      const revealed = await application.evaluate(({ app, BrowserWindow }) => ({
+        hidden: process.platform === 'darwin' && app.isHidden(),
+        focused: BrowserWindow.getAllWindows()[0].isFocused(),
+        pinned: BrowserWindow.getAllWindows()[0].isAlwaysOnTop(),
+      }));
+      assert.equal(revealed.hidden, false);
+      assert.equal(revealed.focused, true, 'Explicit reveal must take keyboard focus');
+      assert.equal(revealed.pinned, false, 'Revealing must preserve the unpinned preference');
+      assert.equal(await player.locator('video').evaluate((v) => v.paused), before.paused);
+      assert.ok((await player.locator('video').evaluate((v) => v.currentTime)) >= before.time);
+    },
+  );
   await check('native panel flags, resize and pin toggle', async () => {
     const reveal = await application.evaluate(({ app, BrowserWindow }) => {
       const win = BrowserWindow.getAllWindows()[0];
@@ -988,6 +1016,89 @@ try {
     );
     await queue.close();
   });
+  await check(
+    'wake and unlock restore shortcut registrations and preserve hidden players',
+    async () => {
+      const data = await fs.mkdtemp(path.join(os.tmpdir(), 'perch-shortcuts-'));
+      let shortcuts;
+      try {
+        shortcuts = await electron.launch({
+          args: [root, '--perch-test', '--perch-test-shortcuts'],
+          env: { ...process.env, PERCH_TEST_DATA: data },
+        });
+        const home = await shortcuts.firstWindow();
+        await shortcuts.evaluate(({ BrowserWindow }) => {
+          for (const w of BrowserWindow.getAllWindows()) {
+            w.setOpacity(0);
+            w.webContents.setAudioMuted(true);
+          }
+        });
+        await home.waitForSelector('#links');
+        for (const event of ['resume', 'unlock-screen']) {
+          const result = await shortcuts.evaluate(
+            ({ globalShortcut, powerMonitor, BrowserWindow }, event) => {
+              const win = BrowserWindow.getAllWindows()[0];
+              win.hide();
+              const events = [];
+              win.once('show', () => events.push('show'));
+              globalShortcut.unregister('Alt+Space');
+              globalShortcut.unregister('Alt+M');
+              powerMonitor.emit(event);
+              return {
+                space: globalShortcut.isRegistered('Alt+Space'),
+                mute: globalShortcut.isRegistered('Alt+M'),
+                events,
+              };
+            },
+            event,
+          );
+          assert.equal(result.space, true, `${event} must restore Option+Space`);
+          assert.equal(result.mute, true, `${event} must restore Option+M`);
+          assert.deepEqual(result.events, [], 'Wake must not automatically reveal hidden players');
+        }
+        const cycle = await shortcuts.evaluate(
+          ({ globalShortcut, powerMonitor, BrowserWindow, app }) => {
+            const original = globalShortcut.register.bind(globalShortcut),
+              callbacks = {};
+            globalShortcut.register = (key, callback) => {
+              callbacks[key] = callback;
+              return original(key, callback);
+            };
+            powerMonitor.emit('resume');
+            globalShortcut.register = original;
+            globalThis.recoveredShortcutCallbacks = callbacks;
+            const win = BrowserWindow.getAllWindows()[0],
+              events = [];
+            win.on('show', () => events.push('show'));
+            win.on('hide', () => events.push('hide'));
+            if (process.platform === 'darwin') app.hide();
+            callbacks['Alt+Space']();
+            return {
+              events,
+              focused: win.isFocused(),
+              hidden: process.platform === 'darwin' && app.isHidden(),
+            };
+          },
+        );
+        assert.equal(cycle.focused, true);
+        assert.equal(cycle.hidden, false);
+        for (const expectedFocus of [false, true, false, true, false]) {
+          const focused = await shortcuts.evaluate(({ BrowserWindow }) => {
+            globalThis.recoveredShortcutCallbacks['Alt+Space']();
+            return BrowserWindow.getAllWindows()[0].isFocused();
+          });
+          assert.equal(
+            focused,
+            expectedFocus,
+            'Repeated presses must keep alternating hide/reveal',
+          );
+        }
+      } finally {
+        await shortcuts?.close();
+        await fs.rm(data, { recursive: true, force: true });
+      }
+    },
+  );
   assert.deepEqual(errors, []);
   await fs.writeFile(
     path.join(output, 'results.json'),

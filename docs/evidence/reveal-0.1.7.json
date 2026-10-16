@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-15",
+  "version": "0.1.7",
+  "oldBehavior": {
+    "explicitRevealFocusedPlayer": false,
+    "isolatedNativePanelCommandsCouldMissShowHideEvents": true,
+    "originalProductionShortcutState": "not inspectable before playback was stopped"
+  },
+  "fixedChecks": {
+    "explicitRevealFocuses": true,
+    "revealDoesNotPauseMedia": true,
+    "unpinnedPreferencePreserved": true,
+    "resumeReregistersBothShortcuts": true,
+    "unlockReregistersBothShortcuts": true,
+    "wakeLeavesHiddenPlayersHidden": true,
+    "sixRecoveredTogglePressesFocused": [
+      true,
+      false,
+      true,
+      false,
+      true,
+      false
+    ]
+  },
+  "native": "Installed silent launch screen opened with focused link field. Physical Option+Space check interrupted by concurrent user input; not certified. App then quit.",
+  "userPlayback": "Stopped on request; no saved video restarted",
+  "limits": "OS wake/unlock events simulated in real Electron; no physical sleep/fullscreen cycle certified for this build."
+}
