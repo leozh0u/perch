@@ -34,7 +34,7 @@ node scripts/verify-youtube.mjs --visible
 
 Quit your normal Perch first. This is an explicit visible native session with a temporary profile, one test app, normal browser audio and working shortcuts. Invisible website runs changed YouTube media behaviour on this Mac, so they are not used as the playback test. The synthetic workflow checks above stay invisible and silent. YouTube availability can affect the result. Raw evidence stays in ignored `output/`; selected public evidence goes in `docs/evidence/`.
 
-For the captions integration, `node scripts/verify-captions.mjs` checks YouTube’s native toggle and visible subtitle text in an isolated, silent profile. Use `node scripts/verify-captions.mjs --visible` after quitting normal Perch for the visible version. `--url=https://www.youtube.com/watch?v=VIDEO_ID` selects another public video; quote that argument in your shell. The source must actually deliver captions for the text assertion to pass. Do not run two native test suites together: their pointer/focus checks can interfere.
+For the captions integration, `node scripts/verify-captions.mjs` checks YouTube's native toggle and visible subtitle text in an isolated, silent profile. Use `node scripts/verify-captions.mjs --visible` after quitting normal Perch for the visible version. `--url=https://www.youtube.com/watch?v=VIDEO_ID` selects another public video; quote that argument in your shell. The source must actually deliver captions for the text assertion to pass. Do not run two native test suites together: their pointer/focus checks can interfere.
 
 ## Build a Mac app
 
@@ -59,7 +59,7 @@ node scripts/native-session.mjs
 
 It goes under ignored `output/test-app/`, retains the inspector for Playwright, and cannot be zipped by the packaging script. Quit your normal Perch first if you want to test global shortcut registration. The native session lasts at most ten minutes; Command+Q ends it. Do not distribute that test package.
 
-The public YouTube check captures the player and queue in `output/playwright/`. When refreshing README screenshots, inspect them first, copy the selected images into `docs/images/`, and preserve the film attribution. Use an isolated test profile; do not capture personal queues or desktop content.
+The public YouTube check captures the player and queue in `output/playwright/`. When refreshing documentation screenshots, inspect them first, copy the selected images into `docs/images/`, and preserve the film attribution. Use an isolated test profile; do not capture personal queues or desktop content.
 
 ## Icons
 
@@ -75,3 +75,21 @@ The menu bar uses the 36-pixel template at 18 points. Keep that size when changi
 ## Before a pull request
 
 Keep changes focused and describe the behaviour you changed and the checks you ran. Preserve the one-player default, explicit dual-player opt-in, normal keyboard controls and remote-page isolation. Never commit cookies, personal queue data, credentials, `output/` or packaged binaries.
+
+## How it works
+
+Electron provides Chromium playback inside a native macOS panel. `setAlwaysOnTop` and `setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })` provide the floating-window behaviour. The app uses the page's existing `HTMLMediaElement` for play/pause, time, volume and speed. It does not download YouTube streams or run a separate decoder.
+
+A sandboxed preload attaches the compact controls in a Shadow DOM and fits the video to the window. It uses DOM constructors so it works with YouTube's Trusted Types policy. The main process owns windows, queue state, shortcuts and local persistence. Each player has its own source and generation identifier, so stale events from a replaced page cannot update a different video.
+
+Remote pages have no Node integration or privileged `window.perch` bridge. That bridge is only present on Perch's bundled local UI. IPC checks its sender, links are validated, and new windows, downloads and permission requests are denied. Perch adds no analytics or backend. Video websites still receive their normal playback traffic; queued YouTube links also use YouTube's oEmbed endpoint for titles.
+
+| File | Responsibility |
+| --- | --- |
+| `src/main.cjs` | Native panels, two-player limit, queue coordination, shortcuts and IPC |
+| `src/preload.js` | Isolated media discovery and commands |
+| `src/player-ui.js` | Hover controls and keyboard-accessible player UI |
+| `src/shell.js` | Link field, queue and settings |
+| `src/core.cjs` | URL validation, queue creation and display-bounds recovery |
+| `src/store.cjs` | Local settings and queue persistence |
+| `scripts/package.mjs` | Mac app packaging and local signing |

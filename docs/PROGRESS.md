@@ -164,3 +164,10 @@ Leo then explicitly requested playback stop. Normal Perch was terminated and its
 15 October 2026: source `217efb803c2f0252b88d430300a20160a977c20a` is pushed with verified leozh0u attribution. [CI 38840241262](https://github.com/leozh0u/perch/actions/runs/38840241262) passed. The [0.1.7 preview](https://github.com/leozh0u/perch/releases/tag/v0.1.7) is public; its 127,300,315-byte ZIP matches local/GitHub SHA-256 `e4d8748276486ddaab622de1654cd2b83b254769c4740c6977981ff0513cea3d`. Installed source/ASAR/signature/fuses match; README and canonical context are updated. Normal Perch is verified not running; no saved video was restarted.
 
 Request audit: immediate audio/video stop is complete. The reproduced visibility-state/focus weakness and startup-only shortcut registration are fixed, with 17 Electron workflows, 6 unit groups, formatting and CI passing. This is not a claim that the original production flags or every OS failure were captured. Real fullscreen/sleep/wake testing for this build remains explicitly unverified after the stop request; the app stays closed for Leo to launch when ready. No new permissions, dependencies, global keys, background task or unrelated project changes were added.
+
+
+## 2 November 2026: concise README
+
+Leo requested a simple, concise, current README after asking how to launch Perch. Reduced the front page from 1,883 to 615 whitespace-delimited words, retained his desktop screenshot and licence credits, and kept install/launch, main controls, queue/two-player basics, motivation and preview limits. It now explicitly distinguishes Command+Space to launch through Spotlight from Option+Space, which only works while Perch is running. Detailed controls/queue behaviour moved to docs/USAGE.md; architecture moved to CONTRIBUTING.md.
+
+Verified the current GitHub release/asset is 0.1.7, its download returns HTTP 200, local documentation links/images/anchors resolve, and Apple's first-open steps remain current. No runtime, package or installed-app changes; no app tests or UI playback were needed for this documentation-only change. Commit/push and public README readback remain the final checks.
